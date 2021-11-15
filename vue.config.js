@@ -1,4 +1,6 @@
 module.exports = {
+  outputDir: 'docs',
+  assetsDir: 'static',
   publicPath: './',
     devServer: {
       https: true,
