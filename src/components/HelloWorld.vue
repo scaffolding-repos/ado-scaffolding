@@ -81,6 +81,7 @@ import * as SDK from "azure-devops-extension-sdk";
 import { getClient } from "azure-devops-extension-api";
 // import { CoreRestClient } from "azure-devops-extension-api/Core";
 import { GitRestClient } from "azure-devops-extension-api/Git/GitClient";
+
 import SchemaForm from "@/components/SchemaForm";
 
 var gitzip = require("../gitzip");
@@ -197,6 +198,9 @@ export default {
       } catch(e) {
         console.log(e);
       }
+    })();
+    
+    (async () => {
       const scaffolding = this.scaffoldings[this.scaffoldingsIdx];
       this.scaffoldingObj = await gitzip(
         scaffolding.account,
