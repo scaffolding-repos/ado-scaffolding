@@ -2,11 +2,14 @@
     "manifestVersion": 1,
     "id": "mayemsft-ado-scaffolding",
     "publisher": "maye-msft",
-    "version": "1.0.0",
+    "version": "1.0.19",
     "name": "Azure Solution Scaffolding",
     "description": "ADO Extension for Azure Solution Scaffolding",
     "public": false,
     "categories": ["Azure Repos"],
+    "scopes": [
+        "vso.code_full"
+    ],
     "targets": [
         {
             "id": "Microsoft.VisualStudio.Services"
@@ -20,20 +23,38 @@
                 "ms.vss-code-web.code-hub-group"
             ],
             "properties": {
-                "name": "My Hub",
-                "uri": "my-hub.html"
+                "name": "Scaffolding",
+                "uri": "index.html"
             }
         }
     ],
     "files": [
         {
-            "path": "my-hub.html",
+            "path": "index.html",
             "addressable": true
         },
         {
             "path": "node_modules/vss-web-extension-sdk/lib",
             "addressable": true,
             "packagePath": "lib"
+        }
+        ,
+        {
+            "path": "dist/css",
+            "addressable": true,
+            "packagePath": "css"
+        }
+        ,
+        {
+            "path": "dist/js",
+            "addressable": true,
+            "packagePath": "js"
+        }
+        ,
+        {
+            "path": "dist/scaffolding",
+            "addressable": true,
+            "packagePath": "scaffolding"
         }
     ]
 }
