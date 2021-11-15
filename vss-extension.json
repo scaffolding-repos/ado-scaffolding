@@ -2,11 +2,12 @@
     "manifestVersion": 1,
     "id": "mayemsft-ado-scaffolding",
     "publisher": "maye-msft",
-    "version": "1.0.19",
+    "version": "1.0.21",
     "name": "Azure Solution Scaffolding",
     "description": "ADO Extension for Azure Solution Scaffolding",
     "public": false,
     "categories": ["Azure Repos"],
+    "baseUri": "https://scaffolding-repos.github.io/ado-scaffolding/",
     "scopes": [
         "vso.code_full"
     ],
@@ -38,23 +39,6 @@
             "addressable": true,
             "packagePath": "lib"
         }
-        ,
-        {
-            "path": "dist/css",
-            "addressable": true,
-            "packagePath": "css"
-        }
-        ,
-        {
-            "path": "dist/js",
-            "addressable": true,
-            "packagePath": "js"
-        }
-        ,
-        {
-            "path": "dist/scaffolding",
-            "addressable": true,
-            "packagePath": "scaffolding"
-        }
+        
     ]
 }

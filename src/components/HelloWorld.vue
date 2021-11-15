@@ -192,11 +192,11 @@ export default {
     //   .catch((err) => console.log("Request Failed", err)); // Catch errors
 
     (async () => {
-      // try{
-      //   await SDK.init();
-      // } catch(e) {
-      //   console.log(e);
-      // }
+      try{
+        await SDK.init();
+      } catch(e) {
+        console.log(e);
+      }
       const scaffolding = this.scaffoldings[this.scaffoldingsIdx];
       this.scaffoldingObj = await gitzip(
         scaffolding.account,
