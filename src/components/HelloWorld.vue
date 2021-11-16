@@ -149,7 +149,7 @@ export default {
   methods: {
     async handleSubmit() {
       this.convertedCode = await convert(this.scaffoldingObj, this.variables);
-      this.createRepo()
+      this.createRepo();
     },
     async previewCode() {
       this.convertedCode = await convert(this.scaffoldingObj, this.variables);
@@ -190,26 +190,21 @@ export default {
         this.adoProject.id
       );
       const paths = Object.keys(this.convertedCode);
-      const commits = [];
+      const changes = [];
       paths.forEach((path) => {
-        commits.push({
-          comment: "Initial commit.",
-          changes: [
-            {
-              changeType: "add",
-              item: {
-                path: path,
-              },
-              newContent: {
-                content: this.convertedCode[path],
-                contentType: "rawtext",
-              },
-            },
-          ],
+        changes.push({
+          changeType: "add",
+          item: {
+            path: path,
+          },
+          newContent: {
+            content: this.convertedCode[path],
+            contentType: "rawtext",
+          },
         });
       });
 
-      const response = await client.createPush(
+      await client.createPush(
         {
           refUpdates: [
             {
@@ -217,26 +212,30 @@ export default {
               oldObjectId: "0000000000000000000000000000000000000000",
             },
           ],
-          commits: [commits[0]]
+          commits: [
+            {
+              comment: "Initial commit.",
+              changes: changes,
+            },
+          ],
         },
         repository.id,
         this.adoProject.id
       );
 
-      
-      await client.createPush(
-        {
-          refUpdates: [
-            {
-              name: "refs/heads/main",
-              oldObjectId: response.refUpdates[0].newObjectId,
-            },
-          ],
-          commits: commits
-        },
-        repository.id,
-        this.adoProject.id
-      );
+      // await client.createPush(
+      //   {
+      //     refUpdates: [
+      //       {
+      //         name: "refs/heads/main",
+      //         oldObjectId: response.refUpdates[0].newObjectId,
+      //       },
+      //     ],
+      //     commits: commits.splice(1),
+      //   },
+      //   repository.id,
+      //   this.adoProject.id
+      // );
     },
   },
   mounted() {
