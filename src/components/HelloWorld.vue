@@ -209,12 +209,27 @@ export default {
         });
       });
 
+      const response = await client.createPush(
+        {
+          refUpdates: [
+            {
+              name: "refs/heads/main",
+              oldObjectId: "0000000000000000000000000000000000000000",
+            },
+          ],
+          commits: [commits[0]]
+        },
+        repository.id,
+        this.adoProject.id
+      );
+
+      
       await client.createPush(
         {
           refUpdates: [
             {
               name: "refs/heads/main",
-              oldObjectId: "c913f4b6f62dd4ea7c5260a5385173c7a95f5110",
+              oldObjectId: response.refUpdates[0].newObjectId,
             },
           ],
           commits: commits
