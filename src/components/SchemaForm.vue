@@ -18,8 +18,9 @@
     </template>
     <slot name="actions">
       <div class="buttons">
-        <button type="submit" class="button is-success"><span>Create Repository</span></button>
-        <button type="button" class="button is-light" @click="submit2"><span>Preview Code</span></button>
+        <button type="submit" class="button is-info"><span>Create Repository</span></button>
+        <button type="button" class="button is-info" @click="submit3"><span>Download</span></button>
+        <button type="button" class="button is-info" @click="submit2"><span>Preview</span></button>
       </div>
     </slot>
   </form>
@@ -79,6 +80,16 @@ export default {
         this.activeErrorMessages = []
         this.$emit('input', pruneEmptyMembers(this.items))
         this.$emit('submit2')
+      }
+      else {
+        this.buildErrors()
+      }
+    },
+    submit3() {
+      if (this.validate()) {
+        this.activeErrorMessages = []
+        this.$emit('input', pruneEmptyMembers(this.items))
+        this.$emit('submit3')
       }
       else {
         this.buildErrors()

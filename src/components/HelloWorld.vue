@@ -3,7 +3,12 @@
     <div class="column is-half">
       <form class="box">
         <b-field label="Scaffolding">
-          <b-select placeholder="Select Scaffolding" expanded v-model="scaffoldingsIdx" @input="onScaffoldingChanged">
+          <b-select
+            placeholder="Select Scaffolding"
+            expanded
+            v-model="scaffoldingsIdx"
+            @input="onScaffoldingChanged"
+          >
             <option
               :value="idx"
               v-for="(scaffolding, idx) in scaffoldings"
@@ -19,16 +24,36 @@
             </option>
           </b-select>
         </b-field>
+
+        <template v-if="adoProjects">
+          <b-field label="Project">
+            <b-select
+              placeholder="Select Project"
+              expanded
+              v-model="adoProject"
+            >
+              <option
+                v-for="adoProject in adoProjects"
+                :value="adoProject"
+                :key="adoProject.id"
+              >
+                {{ adoProject.name }}
+              </option>
+            </b-select>
+          </b-field>
+
+          <b-field label="Repository Name">
+            <b-input v-model="repoName" expanded></b-input>
+          </b-field>
+        </template>
         <schema-form
           :schema="schema"
           v-model="variables"
           @submit="handleSubmit()"
           @submit2="previewCode()"
+          @submit3="downloadCode()"
         />
       </form>
-      <pre>
-        {{ JSON.stringify(variables, null, 4) }}
-      </pre>
     </div>
     <div class="column" style="height: 100%; overflow: auto">
       <h4 class="title is-5">Preview</h4>
@@ -79,13 +104,15 @@
 import * as SDK from "azure-devops-extension-sdk";
 // import { GitServiceIds } from "azure-devops-extension-api/Git/GitServices";
 import { getClient } from "azure-devops-extension-api";
-// import { CoreRestClient } from "azure-devops-extension-api/Core";
+import { CoreRestClient } from "azure-devops-extension-api/Core";
 import { GitRestClient } from "azure-devops-extension-api/Git/GitClient";
 
 import SchemaForm from "@/components/SchemaForm";
 
 var gitzip = require("../gitzip");
 var convert = require("../convert");
+var JSZip = require("jszip");
+var FileSaver = require("file-saver");
 
 export default {
   name: "HelloWorld",
@@ -102,6 +129,8 @@ export default {
   },
   data() {
     return {
+      adoProjects: null,
+      adoProject: null,
       scaffoldings: [
         {
           account: "scaffolding-repos",
@@ -109,6 +138,7 @@ export default {
           branch: "main",
         },
       ],
+      repoName: "app-repo",
       scaffoldingsIdx: 0,
       scaffoldingObj: {},
       convertedCode: {},
@@ -118,12 +148,23 @@ export default {
   },
   methods: {
     async handleSubmit() {
-      console.log(this.variables);
       this.convertedCode = await convert(this.scaffoldingObj, this.variables);
-      console.log(this.convertedCode);
+      this.createRepo()
     },
     async previewCode() {
       this.convertedCode = await convert(this.scaffoldingObj, this.variables);
+    },
+    async downloadCode() {
+      const that = this;
+      const zip = new JSZip();
+      const paths = Object.keys(this.convertedCode);
+      paths.forEach((path) => {
+        zip.file(path, this.convertedCode[path]);
+      });
+
+      zip.generateAsync({ type: "blob" }).then(function (blob) {
+        FileSaver.saveAs(blob, that.repoName + ".zip");
+      });
     },
     loadCode(path) {
       return this.convertedCode[path];
@@ -137,12 +178,37 @@ export default {
       );
     },
     async loadScafdoling() {},
-    async createRepo(repoName, project) {
+    async getProjects() {
+      const client = getClient(CoreRestClient);
+      const projects = await client.getProjects();
+      this.adoProjects = projects;
+    },
+    async createRepo() {
       const client = getClient(GitRestClient);
       const repository = await client.createRepository(
-        { name: repoName },
-        project
+        { name: this.repoName },
+        this.adoProject.id
       );
+      const paths = Object.keys(this.convertedCode);
+      const commits = [];
+      paths.forEach((path) => {
+        commits.push({
+          comment: "Initial commit.",
+          changes: [
+            {
+              changeType: "add",
+              item: {
+                path: path,
+              },
+              newContent: {
+                content: this.convertedCode[path],
+                contentType: "rawtext",
+              },
+            },
+          ],
+        });
+      });
+
       await client.createPush(
         {
           refUpdates: [
@@ -151,30 +217,15 @@ export default {
               oldObjectId: "c913f4b6f62dd4ea7c5260a5385173c7a95f5110",
             },
           ],
-          commits: [
-            {
-              comment: "Initial commit.",
-              changes: [
-                {
-                  changeType: "add",
-                  item: {
-                    path: "/readme3.md",
-                  },
-                  newContent: {
-                    content: "My third file!",
-                    contentType: "rawtext",
-                  },
-                },
-              ],
-            },
-          ],
+          commits: commits
         },
         repository.id,
-        project
+        this.adoProject.id
       );
     },
   },
   mounted() {
+    const that = this;
     // var octo = new Octokat();
 
     // debugger;
@@ -193,13 +244,14 @@ export default {
     //   .catch((err) => console.log("Request Failed", err)); // Catch errors
 
     (async () => {
-      try{
+      try {
         await SDK.init();
-      } catch(e) {
+        await that.getProjects();
+      } catch (e) {
         console.log(e);
       }
     })();
-    
+
     (async () => {
       const scaffolding = this.scaffoldings[this.scaffoldingsIdx];
       this.scaffoldingObj = await gitzip(
