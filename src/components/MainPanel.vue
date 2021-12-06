@@ -25,7 +25,7 @@
           </b-field>
 
           <template v-if="adoProjects">
-            <b-field label="Project" labelPosition="on-border">
+            <b-field label="Azure DevOps Project" labelPosition="on-border">
               <b-select
                 placeholder="Select Project"
                 expanded
