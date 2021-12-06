@@ -25,7 +25,7 @@
           </b-field>
 
           <template v-if="adoProjects">
-            <b-field label="Project">
+            <b-field label="Project" labelPosition="on-border">
               <b-select
                 placeholder="Select Project"
                 expanded
@@ -41,7 +41,7 @@
               </b-select>
             </b-field>
 
-            <b-field label="Repository Name">
+            <b-field label="Repository Name" labelPosition="on-border">
               <b-input v-model="repoName" expanded></b-input>
             </b-field>
           </template>
