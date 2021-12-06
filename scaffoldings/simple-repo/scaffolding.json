@@ -1,0 +1,22 @@
+{
+  "variables": {
+    "name": {
+      "type": "string",
+      "title": "Project Name",
+      "default": "sampleApp"
+    },
+    "description": {
+      "type": "string",
+      "title": "Project Description",
+      "default": "sample app"
+    },
+    "gitignore": {
+      "type": "boolean",
+      "title": "Need .gitignore",
+      "default": true
+    }
+  },
+  "rules": {
+    ".gitignore": "gitignore"
+  }
+}

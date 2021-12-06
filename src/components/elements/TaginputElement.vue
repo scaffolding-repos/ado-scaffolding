@@ -1,5 +1,5 @@
 <template>
-  <b-field :label="schema.title">
+  <b-field :label="schema.title" labelPosition="on-border">
     <b-taginput
       :value="value"
       icon="account-multiple"

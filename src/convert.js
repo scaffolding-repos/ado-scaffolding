@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
 const doT = require("dot");
-const gitzip = require("./gitzip");
+// const gitzip = require("./gitzip");
 
 doT.templateSettings = {
   evaluate: /\{\{([\s\S]+?)\}\}/g,
@@ -30,6 +30,7 @@ async function codeConvert(contents, variable) {
         Object.keys(contents).forEach((path) => {
           let valid = true;
           if (
+            scaffoldingSettings.rules &&
             scaffoldingSettings.rules[path] &&
             typeof scaffoldingSettings.rules[path] === "function"
           ) {
@@ -37,10 +38,16 @@ async function codeConvert(contents, variable) {
               scaffoldingSettings.variables
             );
           } else if (
+            scaffoldingSettings.rules &&
             scaffoldingSettings.rules[path] &&
             Object.keys(scaffoldingSettings.rules).indexOf(path) != -1
           ) {
-            valid = scaffoldingSettings.rules[path];
+            if (variable) {
+              valid = variable[scaffoldingSettings.rules[path]]
+            } else {
+              valid = false
+            }
+            
           }
           if (!variable) {
             variable = {};
@@ -67,21 +74,6 @@ async function codeConvert(contents, variable) {
     })();
   });
 }
-
-
-
-(async () => {
-
-
-  const content = await gitzip(
-    "scaffolding-repos",
-    "simple-nodejs",
-    "main"
-  );
-
-  const newContent = await codeConvert(content)
-  console.log(newContent);
-})()
 
 
 module.exports = codeConvert;

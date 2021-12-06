@@ -1,5 +1,5 @@
 <template>
-  <b-field :label="schema.title" :message="schema.description">
+  <b-field :label="schema.title" :message="schema.description" labelPosition="on-border">
     <b-select :value="value" @input="$emit('input', $event)" :placeholder="schema.title">
       <option v-for="item in schema.enum" :value="item" :key="item">
         {{ item }}

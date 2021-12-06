@@ -1,0 +1,19 @@
+{
+  "name": "{{=params.name}}",
+  "version": "1.0.0",
+  "description": "{{=params.description}}",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "mocha"
+  },
+  "keywords": [
+    {{=params.keywords.split(',')}}
+  ],
+  "author": "{{=params.author}}",
+  "license": "{{=params.license}}",
+  "homepage": "{{=params.homepage}}",
+  "dependencies": {
+    "mocha": "^9.1.3"
+  }
+}

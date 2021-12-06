@@ -1,16 +1,16 @@
 <template>
   <div id="app" style="height:100%">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <MainPanel/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import MainPanel from './components/MainPanel.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    MainPanel
   }
 }
 </script>
@@ -22,5 +22,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   margin: 20px;
+  font-size: 0.8em !important
 }
 </style>

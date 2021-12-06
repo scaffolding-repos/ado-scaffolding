@@ -1,5 +1,5 @@
 <template>
-  <b-field :label="schema.title" :message="schema.description">
+  <b-field :label="schema.title" :message="schema.description" labelPosition="on-border">
     <b-input type="textarea" :minlength="schema.minLength" :maxlength="schema.maxLength" :value="value" @input="$emit('input', $event)">
     </b-input>
   </b-field>

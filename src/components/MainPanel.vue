@@ -1,96 +1,107 @@
 <template>
   <div class="columns" style="height: 100%; overflow: hidden">
     <div class="column is-half">
-      <form class="box">
-        <b-field label="Scaffolding">
-          <b-select
-            placeholder="Select Scaffolding"
-            expanded
-            v-model="scaffoldingsIdx"
-            @input="onScaffoldingChanged"
-          >
-            <option
-              :value="idx"
-              v-for="(scaffolding, idx) in scaffoldings"
-              :key="
-                scaffolding.account +
-                '-' +
-                scaffolding.repo +
-                '-' +
-                scaffolding.branch
-              "
-            >
-              {{ scaffolding.repo }}
-            </option>
-          </b-select>
-        </b-field>
-
-        <template v-if="adoProjects">
-          <b-field label="Project">
+      <div class="card">
+        <header class="card-header">
+          <p class="card-header-title">Scaffolding Settings</p>
+        </header>
+        <form class="box">
+          <b-field label="Select scaffolding" labelPosition="on-border">
             <b-select
-              placeholder="Select Project"
+              placeholder="Select Scaffolding"
               expanded
-              v-model="adoProject"
+              v-model="scaffoldingsIdx"
+              @input="onScaffoldingChanged"
+              style="padding-bottom: 20px"
             >
               <option
-                v-for="adoProject in adoProjects"
-                :value="adoProject"
-                :key="adoProject.id"
+                :value="idx"
+                v-for="(scaffolding, idx) in scaffoldings"
+                :key="scaffolding"
               >
-                {{ adoProject.name }}
+                {{ scaffolding }}
               </option>
             </b-select>
           </b-field>
 
-          <b-field label="Repository Name">
-            <b-input v-model="repoName" expanded></b-input>
-          </b-field>
-        </template>
-        <schema-form
-          :schema="schema"
-          v-model="variables"
-          @submit="handleSubmit()"
-          @submit2="previewCode()"
-          @submit3="downloadCode()"
-        />
-      </form>
+          <template v-if="adoProjects">
+            <b-field label="Project">
+              <b-select
+                placeholder="Select Project"
+                expanded
+                v-model="adoProject"
+              >
+                <option
+                  v-for="adoProject in adoProjects"
+                  :value="adoProject"
+                  :key="adoProject.id"
+                >
+                  {{ adoProject.name }}
+                </option>
+              </b-select>
+            </b-field>
+
+            <b-field label="Repository Name">
+              <b-input v-model="repoName" expanded></b-input>
+            </b-field>
+          </template>
+          <schema-form
+            :schema="schema"
+            :ado="adoProjects"
+            v-model="variables"
+            @submit="handleSubmit()"
+            @submit2="previewCode()"
+            @submit3="downloadCode()"
+          />
+
+          <b-notification style="margin-top:10px" v-if="showNotification"
+            aria-close-label="Close notification">
+            {{notificationMsg}}
+        </b-notification>
+        </form>
+      </div>
     </div>
     <div class="column" style="height: 100%; overflow: auto">
-      <h4 class="title is-5">Preview</h4>
-      <section>
-        <b-collapse
-          v-for="path in paths"
-          :key="path"
-          class="card"
-          animation="slide"
-          aria-id="contentIdForA11y3"
-          :open="false"
-        >
-          <template #trigger="props">
-            <div
-              class="card-header"
-              role="button"
-              aria-controls="contentIdForA11y3"
-            >
-              <p class="card-header-title">
-                {{ path }}
-              </p>
-              <a class="card-header-icon">
-                <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
-              </a>
-            </div>
-          </template>
-
-          <div class="card-content">
-            <div class="content">
-              <pre
-                >{{ loadCode(path) }}
-</pre
+      <div class="card">
+        <header class="card-header">
+          <p class="card-header-title">Code Preview</p>
+        </header>
+        <section>
+          <b-collapse
+            v-for="path in paths"
+            :key="path"
+            class="card"
+            animation="slide"
+            aria-id="contentIdForA11y3"
+            :open="false"
+          >
+            <template #trigger="props">
+              <div
+                class="card-header"
+                role="button"
+                aria-controls="contentIdForA11y3"
               >
+                <p class="card-header-title">
+                  {{ path }}
+                </p>
+                <a class="card-header-icon">
+                  <b-icon :icon="props.open ? 'menu-down' : 'menu-up'">
+                  </b-icon>
+                </a>
+              </div>
+            </template>
+
+            <div class="card-content">
+              <div class="content">
+                <pre
+                  >{{ loadCode(path) }}
+</pre
+                >
+              </div>
             </div>
-          </div>
-        </b-collapse>
-      </section>
+          </b-collapse>
+        </section>
+      </div>
     </div>
   </div>
 </template>
@@ -113,6 +124,9 @@ var gitzip = require("../gitzip");
 var convert = require("../convert");
 var JSZip = require("jszip");
 var FileSaver = require("file-saver");
+const scaffoldings = require("../scaffoldings.json");
+
+import { ToastProgrammatic as Toast } from 'buefy'
 
 export default {
   name: "HelloWorld",
@@ -131,19 +145,15 @@ export default {
     return {
       adoProjects: null,
       adoProject: null,
-      scaffoldings: [
-        {
-          account: "scaffolding-repos",
-          repo: "simple-nodejs",
-          branch: "main",
-        },
-      ],
+      scaffoldings: scaffoldings,
       repoName: "app-repo",
       scaffoldingsIdx: 0,
       scaffoldingObj: {},
       convertedCode: {},
       variables: null,
       schema: {},
+      showNotification: false,
+      notificationMsg: ""
     };
   },
   methods: {
@@ -165,25 +175,40 @@ export default {
       zip.generateAsync({ type: "blob" }).then(function (blob) {
         FileSaver.saveAs(blob, that.repoName + ".zip");
       });
+
+      this.showNotification = true
+      this.notificationMsg = "Start Downloading"
+
+      setTimeout(()=>{
+        that.showNotification = false
+      }, 5000)
     },
     loadCode(path) {
       return this.convertedCode[path];
     },
     async onScaffoldingChanged() {
-      const scaffolding = this.scaffoldings[this.scaffoldingsIdx];
-      this.scaffoldingObj = await gitzip(
-        scaffolding.account,
-        scaffolding.repo,
-        scaffolding.branch
-      );
+      this.loadScafdoling();
     },
-    async loadScafdoling() {},
+    async loadScafdoling() {
+      const scaffolding = this.scaffoldings[this.scaffoldingsIdx];
+      this.scaffoldingObj = await gitzip(scaffolding);
+      const scaffoldingJSON = this.scaffoldingObj["scaffolding.json"];
+      const scaffoldingSettings = JSON.parse(scaffoldingJSON);
+      this.schema = {
+        type: "object",
+        properties: scaffoldingSettings.variables,
+      };
+
+      this.convertedCode = await convert(this.scaffoldingObj, this.variables);
+      this.$forceUpdate();
+    },
     async getProjects() {
       const client = getClient(CoreRestClient);
       const projects = await client.getProjects();
       this.adoProjects = projects;
     },
     async createRepo() {
+      const that = this
       const client = getClient(GitRestClient);
       const repository = await client.createRepository(
         { name: this.repoName },
@@ -222,6 +247,11 @@ export default {
         repository.id,
         this.adoProject.id
       );
+      this.showNotification = true
+      this.notificationMsg = "Create Repo Successfully"
+      setTimeout(()=>{
+        that.showNotification = false
+      }, 5000)
 
       // await client.createPush(
       //   {
@@ -267,19 +297,7 @@ export default {
     })();
 
     (async () => {
-      const scaffolding = this.scaffoldings[this.scaffoldingsIdx];
-      this.scaffoldingObj = await gitzip(
-        scaffolding.account,
-        scaffolding.repo,
-        scaffolding.branch
-      );
-      const scaffoldingJSON = this.scaffoldingObj["scaffolding.json"];
-      const scaffoldingSettings = JSON.parse(scaffoldingJSON);
-      this.schema = {
-        type: "object",
-        properties: scaffoldingSettings.variables,
-      };
-      this.convertedCode = await convert(this.scaffoldingObj, this.variables);
+      that.loadScafdoling();
     })();
   },
 };

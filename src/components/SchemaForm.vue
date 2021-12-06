@@ -13,14 +13,14 @@
     </slot>
     <template v-for="(property, key) in schema.properties">
       <slot :name="key" :item="{key: key, schema: property, value: items[key], update: updateValue}">
-        <component :is="element" :key="key" :schema="property" :value="items[key]" @input="updateValue($event, key)"></component>
+        <component :is="element" :key="key" :schema="property" :value="items[key]" @input="updateValue($event, key)" style="padding-bottom:20px"></component>
       </slot>
     </template>
     <slot name="actions">
       <div class="buttons">
-        <button type="submit" class="button is-info"><span>Create Repository</span></button>
+        <button v-if="ado" type="submit" class="button is-info"><span>Create Repository</span></button>
         <button type="button" class="button is-info" @click="submit3"><span>Download</span></button>
-        <button type="button" class="button is-info" @click="submit2"><span>Preview</span></button>
+        <button v-show="false" type="button" class="button is-info" @click="submit2"><span>Preview</span></button>
       </div>
     </slot>
   </form>
@@ -50,6 +50,9 @@ export default {
       default() {
         return 'form-element'
       }
+    },
+    ado: {
+      type: Object
     }
   },
   data () {
@@ -118,6 +121,7 @@ export default {
     },
     updateValue (value, child) {
       this.items[child] = value
+      this.submit2()
     }
   }
 }
