@@ -1,12 +1,12 @@
 <template>
-  <div class="columns" style="height: 100%; overflow: hidden">
+  <div class="columns" style="height: 100%; overflow: hidden; ">
     <div class="column is-half">
-      <div class="card">
+      <div class="card" style="padding:10px">
         <header class="card-header">
           <p class="card-header-title">Scaffolding Settings</p>
         </header>
         <form class="box">
-          <b-field label="Select scaffolding" labelPosition="on-border">
+          <b-field label="Select Scaffolding" labelPosition="on-border">
             <b-select
               placeholder="Select Scaffolding"
               expanded
@@ -63,7 +63,7 @@
       </div>
     </div>
     <div class="column" style="height: 100%; overflow: auto">
-      <div class="card">
+      <div class="card"  style="padding:10px">
         <header class="card-header">
           <p class="card-header-title">Code Preview</p>
         </header>
