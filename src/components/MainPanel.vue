@@ -30,6 +30,7 @@
                 placeholder="Select Project"
                 expanded
                 v-model="adoProject"
+                 style="padding-bottom:20px"
               >
                 <option
                   v-for="adoProject in adoProjects"
@@ -41,8 +42,8 @@
               </b-select>
             </b-field>
 
-            <b-field label="Repository Name" labelPosition="on-border">
-              <b-input v-model="repoName" expanded></b-input>
+            <b-field label="Repository Name" labelPosition="on-border" >
+              <b-input v-model="repoName" expanded  style="padding-bottom:20px"></b-input>
             </b-field>
           </template>
           <schema-form
