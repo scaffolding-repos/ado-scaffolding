@@ -1,7 +1,7 @@
 <template>
-  <div class="columns" style="height: 100%; overflow: hidden; ">
+  <div class="columns" style="height: 100%; overflow: hidden">
     <div class="column is-half">
-      <div class="card" style="padding:10px">
+      <div class="card" style="padding: 10px">
         <header class="card-header">
           <p class="card-header-title">Scaffolding Settings</p>
         </header>
@@ -30,7 +30,7 @@
                 placeholder="Select Project"
                 expanded
                 v-model="adoProject"
-                 style="padding-bottom:20px"
+                style="padding-bottom: 20px"
               >
                 <option
                   v-for="adoProject in adoProjects"
@@ -42,8 +42,29 @@
               </b-select>
             </b-field>
 
-            <b-field label="Repository Name" labelPosition="on-border" >
-              <b-input v-model="repoName" expanded  style="padding-bottom:20px"></b-input>
+            <b-field label="Repository Name" labelPosition="on-border">
+              <b-input
+                v-model="repoName"
+                expanded
+                style="padding-bottom: 20px"
+              ></b-input>
+            </b-field>
+
+            <b-field
+              v-if="scaffoldingSettings.variablegroups"
+              style="padding-bottom: 10px"
+            >
+              <b-checkbox :value="createVariableGroups">
+                <span style="padding-left: 10px">Create Variable Group</span>
+              </b-checkbox>
+            </b-field>
+            <b-field
+              v-if="scaffoldingSettings.variablegroups"
+              style="padding-bottom: 10px"
+            >
+              <b-checkbox :value="createPipelines">
+                <span style="padding-left: 10px">Create DevOps Pipeline</span>
+              </b-checkbox>
             </b-field>
           </template>
           <schema-form
@@ -55,15 +76,21 @@
             @submit3="downloadCode()"
           />
 
-          <b-notification style="margin-top:10px" v-if="showNotification"
-            aria-close-label="Close notification">
-            {{notificationMsg}}
-        </b-notification>
+          <b-notification
+            style="margin-top: 10px"
+            v-if="showNotification"
+            aria-close-label="Close notification"
+          >
+            {{ notificationMsg }}
+          </b-notification>
+
+          <!-- <a href="#" @click="getVariableGroups">Test</a>
+          <a href="#" @click="createVariableGroup">Create</a> -->
         </form>
       </div>
     </div>
     <div class="column" style="height: 100%; overflow: auto">
-      <div class="card"  style="padding:10px">
+      <div class="card" style="padding: 10px">
         <header class="card-header">
           <p class="card-header-title">Code Preview</p>
         </header>
@@ -113,11 +140,12 @@
 
 // import { CoreRestClient } from "azure-devops-extension-api/Core/CoreClient";
 
-import * as SDK from "azure-devops-extension-sdk";
-// import { GitServiceIds } from "azure-devops-extension-api/Git/GitServices";
-import { getClient } from "azure-devops-extension-api";
-import { CoreRestClient } from "azure-devops-extension-api/Core";
-import { GitRestClient } from "azure-devops-extension-api/Git/GitClient";
+// import * as SDK from "azure-devops-extension-sdk";
+// // import { GitServiceIds } from "azure-devops-extension-api/Git/GitServices";
+// import { getClient } from "azure-devops-extension-api";
+// import { CoreRestClient } from "azure-devops-extension-api/Core";
+// import { GitRestClient } from "azure-devops-extension-api/Git/GitClient";
+// import { TaskAgentRestClient } from "azure-devops-extension-api/TaskAgent/TaskAgentClient";
 
 import SchemaForm from "@/components/SchemaForm";
 
@@ -126,11 +154,12 @@ var convert = require("../convert");
 var JSZip = require("jszip");
 var FileSaver = require("file-saver");
 const scaffoldings = require("../scaffoldings.json");
+const { ADOClient } = require("@/utility/ado-rest-client");
 
-import { ToastProgrammatic as Toast } from 'buefy'
+import { ToastProgrammatic as Toast } from "buefy";
 
 export default {
-  name: "HelloWorld",
+  name: "MainPanel",
   components: {
     SchemaForm,
   },
@@ -150,17 +179,52 @@ export default {
       repoName: "app-repo",
       scaffoldingsIdx: 0,
       scaffoldingObj: {},
+      scaffoldingSettings: {},
       convertedCode: {},
       variables: null,
       schema: {},
       showNotification: false,
-      notificationMsg: ""
+      notificationMsg: "",
+      adoClient: null,
+      createVariableGroups: true,
+      createPipelines: true,
     };
   },
   methods: {
     async handleSubmit() {
       this.convertedCode = await convert(this.scaffoldingObj, this.variables);
-      this.createRepo();
+      const repo = await this.createRepo();
+      if (this.createVariableGroups) {
+        try {
+          Object.keys(this.scaffoldingSettings.variablegroups).forEach(
+            (variablegroupName) => {
+              this.adoClient.createVariableGroup(
+                variablegroupName,
+                this.scaffoldingSettings.variablegroups[variablegroupName]
+              );
+            }
+          );
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      if (this.createPipelines) {
+        try {
+          Object.keys(this.scaffoldingSettings.pipelines).forEach(
+            (pipelineName) => {
+              this.adoClient.createPipeline(
+                this.scaffoldingSettings.pipelines[pipelineName].path,
+                repo.id,
+                pipelineName,
+                this.scaffoldingSettings.pipelines[pipelineName].folder
+              );
+            }
+          );
+        } catch (error) {
+          console.log(error);
+        }
+      }
     },
     async previewCode() {
       this.convertedCode = await convert(this.scaffoldingObj, this.variables);
@@ -177,20 +241,20 @@ export default {
         FileSaver.saveAs(blob, that.repoName + ".zip");
       });
 
-      this.showNotification = true
-      this.notificationMsg = "Start Downloading"
+      this.showNotification = true;
+      this.notificationMsg = "Start Downloading";
 
-      setTimeout(()=>{
-        that.showNotification = false
-      }, 5000)
+      setTimeout(() => {
+        that.showNotification = false;
+      }, 5000);
     },
     loadCode(path) {
       return this.convertedCode[path];
     },
     async onScaffoldingChanged() {
-      this.loadScafdoling();
+      this.loadScaffodling();
     },
-    async loadScafdoling() {
+    async loadScaffodling() {
       const scaffolding = this.scaffoldings[this.scaffoldingsIdx];
       this.scaffoldingObj = await gitzip(scaffolding);
       const scaffoldingJSON = this.scaffoldingObj["scaffolding.json"];
@@ -199,74 +263,84 @@ export default {
         type: "object",
         properties: scaffoldingSettings.variables,
       };
-
+      this.scaffoldingSettings = scaffoldingSettings;
       this.convertedCode = await convert(this.scaffoldingObj, this.variables);
       this.$forceUpdate();
     },
     async getProjects() {
-      const client = getClient(CoreRestClient);
-      const projects = await client.getProjects();
-      this.adoProjects = projects;
+      this.adoProjects = this.adoClient.getProjects();
+    },
+    async createVariableGroup() {
+      try {
+        await this.adoClient.createVariableGroup("test0001");
+      } catch (e) {
+        console.log(e);
+      }
+    },
+
+    async getVariableGroups() {
+      this.adoClient.getVariableGroups(this.adoProject.id);
     },
     async createRepo() {
-      const that = this
-      const client = getClient(GitRestClient);
-      const repository = await client.createRepository(
-        { name: this.repoName },
-        this.adoProject.id
+      const repo = await this.adoClient.createRepo(
+        this.repoName,
+        this.adoProject.id,
+        this.convertedCode,
+        this.scaffoldingSettings.branches
       );
-      const paths = Object.keys(this.convertedCode);
-      const changes = [];
-      paths.forEach((path) => {
-        changes.push({
-          changeType: "add",
-          item: {
-            path: path,
-          },
-          newContent: {
-            content: this.convertedCode[path],
-            contentType: "rawtext",
-          },
-        });
-      });
+      const that = this;
+      this.showNotification = true;
+      this.notificationMsg = "Create Repo Successfully";
+      setTimeout(() => {
+        that.showNotification = false;
+      }, 5000);
 
-      await client.createPush(
-        {
-          refUpdates: [
-            {
-              name: "refs/heads/main",
-              oldObjectId: "0000000000000000000000000000000000000000",
-            },
-          ],
-          commits: [
-            {
-              comment: "Initial commit.",
-              changes: changes,
-            },
-          ],
-        },
-        repository.id,
-        this.adoProject.id
-      );
-      this.showNotification = true
-      this.notificationMsg = "Create Repo Successfully"
-      setTimeout(()=>{
-        that.showNotification = false
-      }, 5000)
+      return repo
+
+      // const that = this
+      // const client = getClient(GitRestClient);
+      // const repository = await client.createRepository(
+      //   { name: this.repoName },
+      //   this.adoProject.id
+      // );
+      // const paths = Object.keys(this.convertedCode);
+      // const changes = [];
+      // paths.forEach((path) => {
+      //   changes.push({
+      //     changeType: "add",
+      //     item: {
+      //       path: path,
+      //     },
+      //     newContent: {
+      //       content: this.convertedCode[path],
+      //       contentType: "rawtext",
+      //     },
+      //   });
+      // });
 
       // await client.createPush(
       //   {
       //     refUpdates: [
       //       {
       //         name: "refs/heads/main",
-      //         oldObjectId: response.refUpdates[0].newObjectId,
+      //         oldObjectId: "0000000000000000000000000000000000000000",
       //       },
       //     ],
-      //     commits: commits.splice(1),
+      //     commits: [
+      //       {
+      //         comment: "Initial commit.",
+      //         changes: changes,
+      //       },
+      //     ],
       //   },
       //   repository.id,
       //   this.adoProject.id
       // );
+      // this.showNotification = true
+      // this.notificationMsg = "Create Repo Successfully"
+      // setTimeout(()=>{
+      //   that.showNotification = false
+      // }, 5000)
     },
   },
   mounted() {
@@ -290,15 +364,19 @@ export default {
 
     (async () => {
       try {
-        await SDK.init();
-        await that.getProjects();
+        that.adoClient = new ADOClient();
+        await that.adoClient.init();
+        that.adoProjects = await that.adoClient.getProjects();
+        if (that.adoProjects.length > 0) {
+          that.adoProject = that.adoProjects[0];
+        }
       } catch (e) {
         console.log(e);
       }
     })();
 
     (async () => {
-      that.loadScafdoling();
+      that.loadScaffodling();
     })();
   },
 };

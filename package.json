@@ -2,18 +2,18 @@
   "name": "mayemsft-ado-scaffolding",
   "version": "1.0.0",
   "private": true,
-  "description": "",
   "author": "",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build-vss": "npx tfx-cli extension create"
+    "build-vss": "npx tfx-cli extension create",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "main": "index.js",
   "dependencies": {
     "autosize": "^5.0.1",
+    "axios": "^0.24.0",
     "azure-devops-extension-api": "^1.158.0",
     "azure-devops-extension-sdk": "^2.0.11",
     "azure-devops-node-api": "^11.0.1",

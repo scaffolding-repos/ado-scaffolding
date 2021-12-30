@@ -1,3 +1,3 @@
-# {{=params.name}}
+# {%{=params.name}%}
 
-{{=params.description}}
+{%{=params.description}%}

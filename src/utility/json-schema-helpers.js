@@ -37,7 +37,7 @@ const scaffold = function (input, f) {
   if (input.type === 'object') {
     let output = {}
     for (const item in input.properties) {
-      output[item] = scaffold(input.properties[item], f)
+      output[item] = scaffold(input.properties[item], f) || input.properties[item].default
     }
     return output
   } else if (input.type === 'array') {
@@ -66,6 +66,7 @@ const merge = function (first, second) {
 }
 
 function scaffoldFromSchema(schema, func) {
+  // eslint-disable-next-line no-debugger
   return scaffold(schema, func)
 }
 
