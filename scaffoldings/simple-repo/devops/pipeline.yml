@@ -5,3 +5,9 @@ trigger:
    
 variables:
 - group: sample-vg
+
+steps:
+- task: Bash@3
+  inputs:
+    filePath: 'src/echo.sh'
+    arguments: 'TEST'

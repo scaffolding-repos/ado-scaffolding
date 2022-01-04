@@ -1,20 +1,39 @@
 {
     "manifestVersion": 1,
-    "id": "azure-ado-scaffolding",
-    "publisher": "maye-msft",
-    "version": "1.0.22",
+    "id": "azure-solution-scaffolding",
+    "publisher": "SeanMa",
+    "version": "1.0.0",
     "name": "Azure Solution Scaffolding",
     "description": "ADO Extension for Azure Solution Scaffolding",
-    "public": false,
+    "public": true,
+    "galleryFlags": [
+        "Preview"
+    ],
     "categories": ["Azure Repos"],
     "baseUri": "https://scaffolding-repos.github.io/ado-scaffolding/",
     "scopes": [
         "vso.build",
         "vso.build_execute",
-        "vso.release_manage",
+        "vso.project",
+        "vso.project_write",
         "vso.project_manage",
+        "vso.work",
+        "vso.work_write",
+        "vso.work_full",
+        "vso.release_manage",
+        "vso.settings",
+        "vso.variablegroups_read",
+        "vso.variablegroups_write",
         "vso.variablegroups_manage",
-        "vso.code_full"
+        "vso.code_full",
+        "vso.tokens",
+        "vso.tokenadministration",
+        "vso.security_manage",
+        "vso.machinegroup_manage",
+        "vso.environment_manage",
+        "vso.taskgroups_read",
+        "vso.taskgroups_write",
+        "vso.taskgroups_manage"
     ],
     "targets": [
         {
@@ -38,12 +57,51 @@
         {
             "path": "index.html",
             "addressable": true
-        },
-        {
-            "path": "node_modules/vss-web-extension-sdk/lib",
-            "addressable": true,
-            "packagePath": "lib"
         }
         
-    ]
+    ],
+    "content": {
+        "details": {
+            "path": "overview.md"
+        }
+    },
+    "links": {
+        "home": {
+            "uri": "https://github.com/scaffolding-repos/ado-scaffolding"
+        },
+        "getstarted": {
+            "uri": "https://github.com/scaffolding-repos/ado-scaffolding/blob/dev/README.md"
+        },
+        "learn": {
+            "uri": "https://github.com/scaffolding-repos/ado-scaffolding/blob/dev/README.md"
+        },
+        "support": {
+            "uri": "https://github.com/scaffolding-repos/ado-scaffolding/issues"
+        },
+        "repository": {
+            "uri": "https://github.com/scaffolding-repos/ado-scaffolding"
+        },
+        "issues": {
+            "uri": "https://github.com/scaffolding-repos/ado-scaffolding/issues"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "uri": "https://github.com/scaffolding-repos/ado-scaffolding"
+    },
+    "branding": {
+        "color": "rgb(34, 34, 34)",
+        "theme": "dark"
+    },
+    "screenshots": [
+        {
+            "path": "screenshots/settings.png"
+        },
+        {
+            "path": "screenshots/preview.png"
+        }
+    ],
+    "icons": {
+        "default": "public/icon-128-128.png"
+    }
 }

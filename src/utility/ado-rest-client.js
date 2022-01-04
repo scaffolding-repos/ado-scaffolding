@@ -191,7 +191,7 @@ class ADOClient {
   async getVariableGroups(projectId) {
     const client = getClient(TaskAgentRestClient);
     const variableGroups = await client.getVariableGroups(projectId);
-    console.log(variableGroups);
+    return variableGroups
   }
 }
 
