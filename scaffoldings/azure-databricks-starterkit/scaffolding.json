@@ -1,0 +1,78 @@
+{
+  "variables": {
+    
+  },
+  "rules": {
+    
+  },
+  "branches":{
+    "dev":{
+      "description": "Dev Branch"
+    },
+    "stg":{
+      "description": "Staging Branch"
+    },
+    "release":{
+      "description": "Release Branch"
+    }
+  },
+  "variablegroups": {
+    "Databricks-test-environment": {
+      "databricksDomain_test": {
+        "isSecured": false,
+        "value": ""
+      },
+      "databricksClusterId_test": {
+        "isSecred": false,
+        "value": ""
+      },
+      "databricksToken_test": {
+        "isSecred": true,
+        "value": ""
+      }
+    },
+    "Databricks-stg-environment": {
+      "databricksDomain_stg": {
+        "isSecred": false,
+        "value": ""
+      },
+      "databricksClusterId_stg": {
+        "isSecred": false,
+        "value": ""
+      },
+      "databricksToken_stg": {
+        "isSecred": true,
+        "value": ""
+      }
+    },
+    "Databricks-prod-environment": {
+      "databricksDomain_prod": {
+        "isSecred": false,
+        "value": ""
+      },
+      "databricksClusterId_prod": {
+        "isSecred": false,
+        "value": ""
+      },
+      "databricksToken_prod": {
+        "isSecred": true,
+        "value": ""
+      }
+    }
+  },
+  "pipelines": {
+    "pr_pipeline":{
+      "folder":"databricks-pipelines",
+      "path":"devops/pr-pipeline.yml"
+    },
+    "cd_pipeline":{
+      "folder":"databricks-pipelines",
+      "path":"devops/cd-pipeline.yml"
+    },
+    "pd_pipeline":{
+      "folder":"databricks-pipelines",
+      "path":"devops/pd-pipeline.yml"
+    }
+  }
+}
+

@@ -1,10 +1,9 @@
 <template>
-  <div class="columns" style="height: 100%; overflow: hidden; ">
+  <div class="columns" style="height: 100%; overflow: hidden">
     <div class="column is-half">
-      <div class="card" style="padding:10px">
-        <header class="card-header">
-          <p class="card-header-title">Scaffolding Settings</p>
-        </header>
+      <div style="padding: 10px; border: 0">
+        <p class="card-header-title">Scaffolding Settings</p>
+
         <form class="box">
           <b-field label="Select Scaffolding" labelPosition="on-border">
             <b-select
@@ -30,7 +29,7 @@
                 placeholder="Select Project"
                 expanded
                 v-model="adoProject"
-                 style="padding-bottom:20px"
+                style="padding-bottom: 20px"
               >
                 <option
                   v-for="adoProject in adoProjects"
@@ -42,8 +41,29 @@
               </b-select>
             </b-field>
 
-            <b-field label="Repository Name" labelPosition="on-border" >
-              <b-input v-model="repoName" expanded  style="padding-bottom:20px"></b-input>
+            <b-field label="Repository Name" labelPosition="on-border">
+              <b-input
+                v-model="repoName"
+                expanded
+                style="padding-bottom: 20px"
+              ></b-input>
+            </b-field>
+
+            <b-field
+              v-if="scaffoldingSettings.variablegroups"
+              style="padding-bottom: 10px"
+            >
+              <b-checkbox :value="createVariableGroups">
+                <span style="padding-left: 10px">Create Variable Group</span>
+              </b-checkbox>
+            </b-field>
+            <b-field
+              v-if="scaffoldingSettings.variablegroups"
+              style="padding-bottom: 10px"
+            >
+              <b-checkbox :value="createPipelines">
+                <span style="padding-left: 10px">Create DevOps Pipeline</span>
+              </b-checkbox>
             </b-field>
           </template>
           <schema-form
@@ -55,18 +75,23 @@
             @submit3="downloadCode()"
           />
 
-          <b-notification style="margin-top:10px" v-if="showNotification"
-            aria-close-label="Close notification">
-            {{notificationMsg}}
-        </b-notification>
+          <b-notification
+            style="margin-top: 10px"
+            v-if="showNotification"
+            aria-close-label="Close notification"
+          >
+            {{ notificationMsg }}
+          </b-notification>
+
+          <!-- <a href="#" @click="getVariableGroups">Test</a>
+          <a href="#" @click="createVariableGroup">Create</a> -->
         </form>
       </div>
     </div>
     <div class="column" style="height: 100%; overflow: auto">
-      <div class="card"  style="padding:10px">
-        <header class="card-header">
-          <p class="card-header-title">Code Preview</p>
-        </header>
+      <div style="padding: 10px; border: 0">
+        <p class="card-header-title">Code Preview</p>
+
         <section>
           <b-collapse
             v-for="path in paths"
@@ -111,14 +136,6 @@
 /* eslint-disable no-debugger */
 /* eslint-disable no-unused-vars */
 
-// import { CoreRestClient } from "azure-devops-extension-api/Core/CoreClient";
-
-import * as SDK from "azure-devops-extension-sdk";
-// import { GitServiceIds } from "azure-devops-extension-api/Git/GitServices";
-import { getClient } from "azure-devops-extension-api";
-import { CoreRestClient } from "azure-devops-extension-api/Core";
-import { GitRestClient } from "azure-devops-extension-api/Git/GitClient";
-
 import SchemaForm from "@/components/SchemaForm";
 
 var gitzip = require("../gitzip");
@@ -126,14 +143,17 @@ var convert = require("../convert");
 var JSZip = require("jszip");
 var FileSaver = require("file-saver");
 const scaffoldings = require("../scaffoldings.json");
+const { ADOClient } = require("@/utility/ado-rest-client");
 
-import { ToastProgrammatic as Toast } from 'buefy'
+import { ToastProgrammatic as Toast } from "buefy";
+import mixin from "@/mixins/mixin";
 
 export default {
-  name: "HelloWorld",
+  name: "MainPanel",
   components: {
     SchemaForm,
   },
+  mixins: [mixin],
   props: {
     msg: String,
   },
@@ -150,124 +170,161 @@ export default {
       repoName: "app-repo",
       scaffoldingsIdx: 0,
       scaffoldingObj: {},
+      scaffoldingSettings: {},
       convertedCode: {},
       variables: null,
       schema: {},
       showNotification: false,
-      notificationMsg: ""
+      notificationMsg: "",
+      adoClient: null,
+      createVariableGroups: true,
+      createPipelines: true,
     };
   },
   methods: {
-    async handleSubmit() {
-      this.convertedCode = await convert(this.scaffoldingObj, this.variables);
-      this.createRepo();
-    },
-    async previewCode() {
-      this.convertedCode = await convert(this.scaffoldingObj, this.variables);
-    },
-    async downloadCode() {
-      const that = this;
-      const zip = new JSZip();
-      const paths = Object.keys(this.convertedCode);
-      paths.forEach((path) => {
-        zip.file(path, this.convertedCode[path]);
-      });
-
-      zip.generateAsync({ type: "blob" }).then(function (blob) {
-        FileSaver.saveAs(blob, that.repoName + ".zip");
-      });
-
-      this.showNotification = true
-      this.notificationMsg = "Start Downloading"
-
-      setTimeout(()=>{
-        that.showNotification = false
-      }, 5000)
-    },
-    loadCode(path) {
-      return this.convertedCode[path];
-    },
-    async onScaffoldingChanged() {
-      this.loadScafdoling();
-    },
-    async loadScafdoling() {
-      const scaffolding = this.scaffoldings[this.scaffoldingsIdx];
-      this.scaffoldingObj = await gitzip(scaffolding);
-      const scaffoldingJSON = this.scaffoldingObj["scaffolding.json"];
-      const scaffoldingSettings = JSON.parse(scaffoldingJSON);
-      this.schema = {
-        type: "object",
-        properties: scaffoldingSettings.variables,
-      };
-
-      this.convertedCode = await convert(this.scaffoldingObj, this.variables);
-      this.$forceUpdate();
-    },
-    async getProjects() {
-      const client = getClient(CoreRestClient);
-      const projects = await client.getProjects();
-      this.adoProjects = projects;
-    },
-    async createRepo() {
-      const that = this
-      const client = getClient(GitRestClient);
-      const repository = await client.createRepository(
-        { name: this.repoName },
-        this.adoProject.id
-      );
-      const paths = Object.keys(this.convertedCode);
-      const changes = [];
-      paths.forEach((path) => {
-        changes.push({
-          changeType: "add",
-          item: {
-            path: path,
-          },
-          newContent: {
-            content: this.convertedCode[path],
-            contentType: "rawtext",
-          },
-        });
-      });
-
-      await client.createPush(
-        {
-          refUpdates: [
-            {
-              name: "refs/heads/main",
-              oldObjectId: "0000000000000000000000000000000000000000",
-            },
-          ],
-          commits: [
-            {
-              comment: "Initial commit.",
-              changes: changes,
-            },
-          ],
-        },
-        repository.id,
-        this.adoProject.id
-      );
-      this.showNotification = true
-      this.notificationMsg = "Create Repo Successfully"
-      setTimeout(()=>{
-        that.showNotification = false
-      }, 5000)
-
-      // await client.createPush(
-      //   {
-      //     refUpdates: [
-      //       {
-      //         name: "refs/heads/main",
-      //         oldObjectId: response.refUpdates[0].newObjectId,
-      //       },
-      //     ],
-      //     commits: commits.splice(1),
-      //   },
-      //   repository.id,
-      //   this.adoProject.id
-      // );
-    },
+    // async handleSubmit() {
+    //   this.convertedCode = await convert(this.scaffoldingObj, this.variables);
+    //   const repo = await this.createRepo();
+    //   if (this.createVariableGroups) {
+    //     try {
+    //       Object.keys(this.scaffoldingSettings.variablegroups).forEach(
+    //         (variablegroupName) => {
+    //           this.adoClient.createVariableGroup(
+    //             variablegroupName,
+    //             this.scaffoldingSettings.variablegroups[variablegroupName]
+    //           );
+    //         }
+    //       );
+    //     } catch (error) {
+    //       console.log(error);
+    //     }
+    //   }
+    //   if (this.createPipelines) {
+    //     try {
+    //       Object.keys(this.scaffoldingSettings.pipelines).forEach(
+    //         (pipelineName) => {
+    //           this.adoClient.createPipeline(
+    //             this.scaffoldingSettings.pipelines[pipelineName].path,
+    //             repo.id,
+    //             pipelineName,
+    //             this.scaffoldingSettings.pipelines[pipelineName].folder
+    //           );
+    //         }
+    //       );
+    //     } catch (error) {
+    //       console.log(error);
+    //     }
+    //   }
+    // },
+    // async previewCode() {
+    //   this.convertedCode = await convert(this.scaffoldingObj, this.variables);
+    // },
+    // async downloadCode() {
+    //   const that = this;
+    //   const zip = new JSZip();
+    //   const paths = Object.keys(this.convertedCode);
+    //   paths.forEach((path) => {
+    //     zip.file(path, this.convertedCode[path]);
+    //   });
+    //   zip.generateAsync({ type: "blob" }).then(function (blob) {
+    //     FileSaver.saveAs(blob, that.repoName + ".zip");
+    //   });
+    //   this.showNotification = true;
+    //   this.notificationMsg = "Start Downloading";
+    //   setTimeout(() => {
+    //     that.showNotification = false;
+    //   }, 5000);
+    // },
+    // loadCode(path) {
+    //   return this.convertedCode[path];
+    // },
+    // async onScaffoldingChanged() {
+    //   this.loadScaffodling();
+    // },
+    // async loadScaffodling() {
+    //   const scaffolding = this.scaffoldings[this.scaffoldingsIdx];
+    //   this.scaffoldingObj = await gitzip(scaffolding);
+    //   const scaffoldingJSON = this.scaffoldingObj["scaffolding.json"];
+    //   const scaffoldingSettings = JSON.parse(scaffoldingJSON);
+    //   this.schema = {
+    //     type: "object",
+    //     properties: scaffoldingSettings.variables,
+    //   };
+    //   this.scaffoldingSettings = scaffoldingSettings;
+    //   this.convertedCode = await convert(this.scaffoldingObj, this.variables);
+    //   this.$forceUpdate();
+    // },
+    // async getProjects() {
+    //   this.adoProjects = this.adoClient.getProjects();
+    // },
+    // async createVariableGroup() {
+    //   try {
+    //     await this.adoClient.createVariableGroup("test0001");
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    // },
+    // async getVariableGroups() {
+    //   this.adoClient.getVariableGroups(this.adoProject.id);
+    // },
+    // async createRepo() {
+    //   const repo = await this.adoClient.createRepo(
+    //     this.repoName,
+    //     this.adoProject.id,
+    //     this.convertedCode,
+    //     this.scaffoldingSettings.branches
+    //   );
+    //   const that = this;
+    //   this.showNotification = true;
+    //   this.notificationMsg = "Create Repo Successfully";
+    //   setTimeout(() => {
+    //     that.showNotification = false;
+    //   }, 5000);
+    //   return repo
+    //   // const that = this
+    //   // const client = getClient(GitRestClient);
+    //   // const repository = await client.createRepository(
+    //   //   { name: this.repoName },
+    //   //   this.adoProject.id
+    //   // );
+    //   // const paths = Object.keys(this.convertedCode);
+    //   // const changes = [];
+    //   // paths.forEach((path) => {
+    //   //   changes.push({
+    //   //     changeType: "add",
+    //   //     item: {
+    //   //       path: path,
+    //   //     },
+    //   //     newContent: {
+    //   //       content: this.convertedCode[path],
+    //   //       contentType: "rawtext",
+    //   //     },
+    //   //   });
+    //   // });
+    //   // await client.createPush(
+    //   //   {
+    //   //     refUpdates: [
+    //   //       {
+    //   //         name: "refs/heads/main",
+    //   //         oldObjectId: "0000000000000000000000000000000000000000",
+    //   //       },
+    //   //     ],
+    //   //     commits: [
+    //   //       {
+    //   //         comment: "Initial commit.",
+    //   //         changes: changes,
+    //   //       },
+    //   //     ],
+    //   //   },
+    //   //   repository.id,
+    //   //   this.adoProject.id
+    //   // );
+    //   // this.showNotification = true
+    //   // this.notificationMsg = "Create Repo Successfully"
+    //   // setTimeout(()=>{
+    //   //   that.showNotification = false
+    //   // }, 5000)
+    // },
   },
   mounted() {
     const that = this;
@@ -290,15 +347,19 @@ export default {
 
     (async () => {
       try {
-        await SDK.init();
-        await that.getProjects();
+        that.adoClient = new ADOClient();
+        await that.adoClient.init();
+        that.adoProjects = await that.adoClient.getProjects();
+        if (that.adoProjects.length > 0) {
+          that.adoProject = that.adoProjects[0];
+        }
       } catch (e) {
         console.log(e);
       }
     })();
 
     (async () => {
-      that.loadScafdoling();
+      that.loadScaffodling();
     })();
   },
 };

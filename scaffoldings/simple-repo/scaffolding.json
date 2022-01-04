@@ -18,5 +18,30 @@
   },
   "rules": {
     ".gitignore": "gitignore"
+  },
+  "branches":{
+    "dev":{
+      "description": "Dev Branch"
+    },
+    "stg":{
+      "description": "Staging Branch"
+    },
+    "release":{
+      "description": "Release Branch"
+    }
+  },
+  "variablegroups": {
+    "sample-vg": {
+      "sample_var": {
+        "isSecured": false,
+        "value": "val"
+      }
+    }
+  },
+  "pipelines": {
+    "pr_pipeline":{
+      "folder":"pipelines",
+      "path":"devops/pipeline.yml"
+    }
   }
 }

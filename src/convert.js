@@ -3,14 +3,14 @@ const doT = require("dot");
 // const gitzip = require("./gitzip");
 
 doT.templateSettings = {
-  evaluate: /\{\{([\s\S]+?)\}\}/g,
-  interpolate: /\{\{=([\s\S]+?)\}\}/g,
-  encode: /\{\{!([\s\S]+?)\}\}/g,
-  use: /\{\{#([\s\S]+?)\}\}/g,
-  define: /\{\{##\s*([\w\.$]+)\s*(\:|=)([\s\S]+?)#\}\}/g,
-  conditional: /\{\{\?(\?)?\s*([\s\S]*?)\s*\}\}/g,
+  evaluate: /\{\%\{([\s\S]+?)\}\%\}/g,
+  interpolate: /\{\%\{=([\s\S]+?)\}\%\}/g,
+  encode: /\{\%\{!([\s\S]+?)\}\%\}/g,
+  use: /\{\%\{#([\s\S]+?)\}\%\}/g,
+  define: /\{\%\{##\s*([\w\.$]+)\s*(\:|=)([\s\S]+?)#\}\%\}/g,
+  conditional: /\{\\%{\?(\?)?\s*([\s\S]*?)\s*\}\%\}/g,
   iterate:
-    /\{\{~\s*(?:\}\}|([\s\S]+?)\s*\:\s*([\w$]+)\s*(?:\:\s*([\w$]+))?\s*\}\})/g,
+    /\{\%\{~\s*(?:\}\}|([\s\S]+?)\s*\:\s*([\w$]+)\s*(?:\:\s*([\w$]+))?\s*\}\%\})/g,
   varname: "params",
   strip: false,
   append: true,
@@ -65,7 +65,6 @@ async function codeConvert(contents, variable) {
             }
             newContents[path] = resultText;
           }
-
           resolve(newContents);
         });
       } catch (e) {

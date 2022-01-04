@@ -1,0 +1,33 @@
+trigger:
+  branches:
+    include:
+    - dev
+   
+variables:
+- group: Databricks-test-environment
+
+
+stages:
+
+- stage: deploy_to_testing
+  displayName: 'Deploy to testing environment'
+  jobs:
+  - template: ./template/deploy_notebook_job.yml
+    parameters:
+      environmentName: 'TEST'
+      databricksDomain: '$(databricksDomain_test)'
+      databricksToken: '$(databricksToken_test)'
+      databricksNotebookPath: '/Shared/notebook-tests/dbxbuild_$(Build.BuildId)/'
+
+
+- stage: test_at_testing
+  displayName: 'Test at testing environment'
+  jobs:
+  - template: ./template/test_notebook_job.yml
+    parameters:
+      environmentName: 'TEST'
+      databricksDomain: '$(databricksDomain_test)'
+      databricksToken: '$(databricksToken_test)'
+      databricksClusterId: '$(databricksClusterId_test)'
+      databricksNotebookPath: '/Shared/notebook-tests/dbxbuild_$(Build.BuildId)/'
+

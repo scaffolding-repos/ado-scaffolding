@@ -1,14 +1,19 @@
 {
     "manifestVersion": 1,
-    "id": "mayemsft-ado-scaffolding",
+    "id": "azure-ado-scaffolding",
     "publisher": "maye-msft",
-    "version": "1.0.21",
+    "version": "1.0.22",
     "name": "Azure Solution Scaffolding",
     "description": "ADO Extension for Azure Solution Scaffolding",
     "public": false,
     "categories": ["Azure Repos"],
     "baseUri": "https://scaffolding-repos.github.io/ado-scaffolding/",
     "scopes": [
+        "vso.build",
+        "vso.build_execute",
+        "vso.release_manage",
+        "vso.project_manage",
+        "vso.variablegroups_manage",
         "vso.code_full"
     ],
     "targets": [
