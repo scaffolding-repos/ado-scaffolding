@@ -16,6 +16,8 @@ Note: The extension need permission scopes to generate repo, branches and pipeli
 
 - GitHub Page
 
+https://scaffolding-repos.github.io/ado-scaffolding/
+
 Code download only.
 Note: repo and pipelines will not be generated.
 
@@ -134,4 +136,4 @@ In this example, the extension will replace
 
 Use {%{ params.[VARIABLE_NAME]}%} in sample code for dynamic content.
 
-Please find existing scaffoldings as reference under [./scafollings](./scafollings) folder
+Please find existing scaffoldings as reference under [./scafollings](./scaffoldings) folder

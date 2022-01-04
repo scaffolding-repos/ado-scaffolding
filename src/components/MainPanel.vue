@@ -1,10 +1,9 @@
 <template>
   <div class="columns" style="height: 100%; overflow: hidden">
     <div class="column is-half">
-      <div class="card" style="padding: 10px; border:0">
-        <header class="card-header">
-          <p class="card-header-title">Scaffolding Settings</p>
-        </header>
+      <div style="padding: 10px; border: 0">
+        <p class="card-header-title">Scaffolding Settings</p>
+
         <form class="box">
           <b-field label="Select Scaffolding" labelPosition="on-border">
             <b-select
@@ -89,11 +88,10 @@
         </form>
       </div>
     </div>
-    <div class="column" style="height: 100%; overflow: auto; ">
-      <div class="card" style="padding: 10px; border:0">
-        <header class="card-header">
-          <p class="card-header-title">Code Preview</p>
-        </header>
+    <div class="column" style="height: 100%; overflow: auto">
+      <div style="padding: 10px; border: 0">
+        <p class="card-header-title">Code Preview</p>
+
         <section>
           <b-collapse
             v-for="path in paths"
@@ -148,14 +146,14 @@ const scaffoldings = require("../scaffoldings.json");
 const { ADOClient } = require("@/utility/ado-rest-client");
 
 import { ToastProgrammatic as Toast } from "buefy";
-import mixin from '@/mixins/mixin'
+import mixin from "@/mixins/mixin";
 
 export default {
   name: "MainPanel",
   components: {
     SchemaForm,
   },
-  mixins:[mixin],
+  mixins: [mixin],
   props: {
     msg: String,
   },
@@ -201,7 +199,6 @@ export default {
     //       console.log(error);
     //     }
     //   }
-
     //   if (this.createPipelines) {
     //     try {
     //       Object.keys(this.scaffoldingSettings.pipelines).forEach(
@@ -229,14 +226,11 @@ export default {
     //   paths.forEach((path) => {
     //     zip.file(path, this.convertedCode[path]);
     //   });
-
     //   zip.generateAsync({ type: "blob" }).then(function (blob) {
     //     FileSaver.saveAs(blob, that.repoName + ".zip");
     //   });
-
     //   this.showNotification = true;
     //   this.notificationMsg = "Start Downloading";
-
     //   setTimeout(() => {
     //     that.showNotification = false;
     //   }, 5000);
@@ -270,7 +264,6 @@ export default {
     //     console.log(e);
     //   }
     // },
-
     // async getVariableGroups() {
     //   this.adoClient.getVariableGroups(this.adoProject.id);
     // },
@@ -287,9 +280,7 @@ export default {
     //   setTimeout(() => {
     //     that.showNotification = false;
     //   }, 5000);
-
     //   return repo
-
     //   // const that = this
     //   // const client = getClient(GitRestClient);
     //   // const repository = await client.createRepository(
@@ -310,7 +301,6 @@ export default {
     //   //     },
     //   //   });
     //   // });
-
     //   // await client.createPush(
     //   //   {
     //   //     refUpdates: [

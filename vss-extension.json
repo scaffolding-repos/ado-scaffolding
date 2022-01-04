@@ -1,6 +1,6 @@
 {
     "manifestVersion": 1,
-    "id": "mayemsft-ado-scaffolding",
+    "id": "azure-ado-scaffolding",
     "publisher": "maye-msft",
     "version": "1.0.22",
     "name": "Azure Solution Scaffolding",
