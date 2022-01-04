@@ -12,7 +12,7 @@ Generally, this extension generates the code includes:
 
 - Install from Azure DevOps Marketplace
 
-Note: The extension need permission scopes to generate repo, branches and pipelines. And it is hosed as Github Pages staticly, no server-side to collect user data.
+Note: The extension need permission scopes to generate repo, branches and pipelines. And it is hosed as Github Pages, no server-side to collect user data.
 
 - GitHub Page
 
@@ -136,4 +136,4 @@ In this example, the extension will replace
 
 Use {%{ params.[VARIABLE_NAME]}%} in sample code for dynamic content.
 
-Please find existing scaffoldings as reference under [./scafollings](./scaffoldings) folder
+Please find existing scaffoldings as reference under [./scaffoldings](./scaffoldings) folder
