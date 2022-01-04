@@ -65,7 +65,6 @@ async function codeConvert(contents, variable) {
             }
             newContents[path] = resultText;
           }
-
           resolve(newContents);
         });
       } catch (e) {

@@ -1,0 +1,7 @@
+trigger:
+  branches:
+    include:
+    - dev
+   
+variables:
+- group: sample-vg
