@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "azure-solution-scaffolding",
     "publisher": "SeanMa",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "Azure Solution Scaffolding",
     "description": "ADO Extension for Azure Solution Scaffolding",
     "public": true,
@@ -86,6 +86,9 @@
         "theme": "dark"
     },
     "screenshots": [
+        {
+            "path": "screenshots/scaffolding.png"
+        },
         {
             "path": "screenshots/settings.png"
         },

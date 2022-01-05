@@ -1,6 +1,6 @@
 # Overview
 
-This extension generates code of solutions based on Azure Services, such as Azure DataBricks, Azure ML and so on. User can use this extension as starter kit to simplify the project generation.
+This extension generates **code repository** of solutions based on Azure Services, such as Azure DataBricks, Azure ML and so on. It can be used as starter kit to simplify the project generation.
 
 It generate the following artifacts for a solution
 
@@ -8,7 +8,9 @@ It generate the following artifacts for a solution
 - Azure DevOps Pipelines and yaml files
 - Azure DevOps Variable groups with environment variables used in Pipelines
 
-**To download the code generated only, Please use the GitHub Page**
+After installing this extension, you can find **Scaffolding** under **Repos**
+
+**To download the generated code only, please use the GitHub Page**
 
 https://scaffolding-repos.github.io/ado-scaffolding
 
@@ -28,6 +30,6 @@ https://scaffolding-repos.github.io/ado-scaffolding
 
 ## Open Source
 
-The source code of this extension are at github
+The source code of this extension is at github
 
 https://github.com/scaffolding-repos/ado-scaffolding
