@@ -14,7 +14,8 @@
         "vso.release_manage",
         "vso.project_manage",
         "vso.variablegroups_manage",
-        "vso.code_full"
+        "vso.code_full",
+        "vso.serviceendpoint_manage"
     ],
     "targets": [
         {

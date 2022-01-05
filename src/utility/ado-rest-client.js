@@ -12,6 +12,7 @@ class ADOClient {
   user = null;
   project = null;
   host = null;
+  tenant = null;
   token = null;
   authHeader = null;
   VSS = null;
@@ -31,6 +32,7 @@ class ADOClient {
           that.account = VSS.getWebContext().account;
           that.project = VSS.getWebContext().project;
           that.host = VSS.getWebContext().host;
+          that.tenant = VSS.getWebContext().tenant;
 
           that.axiosInstance = axios.create({
             baseURL: that.host.uri,
@@ -192,6 +194,57 @@ class ADOClient {
     const client = getClient(TaskAgentRestClient);
     const variableGroups = await client.getVariableGroups(projectId);
     console.log(variableGroups);
+  }
+
+  async createAMLServiceConnection(
+    subscriptionId,
+    resourceGroup,
+    tenantId,
+    mlWorkspaceName,
+    mlWorkspaceLocation,
+    mlServiceConnectionName) {
+    const data = JSON.stringify({
+      "data": {
+        "environment": "AzureCloud",
+        "scopeLevel": "AzureMLWorkspace",
+        "subscriptionId": subscriptionId,
+        "resourceGroupName": resourceGroup,
+        "mlWorkspaceName": mlWorkspaceName,
+        "mlWorkspaceLocation": mlWorkspaceLocation,
+        "creationMode": "Automatic"
+      },
+      "name": mlServiceConnectionName,
+      "type": "azurerm",
+      "description": "",
+      "authorization": {
+        "parameters": {
+          "tenantid": tenantId,
+          "authenticationType": "spnKey"
+        },
+        "scheme": "ServicePrincipal"
+      },
+      "isShared": false,
+      "isReady": true,
+      "serviceEndpointProjectReferences": [
+        {
+          "projectReference": this.project,
+          "name": mlServiceConnectionName
+        }]
+    });
+    try {
+      const response = await this.axiosInstance({
+        method: "post",
+        url: `/${this.project.name}/_apis/serviceendpoint/endpoints`,
+        params: {
+          "api-version": "6.0-preview.4",
+        },
+        data: data,
+      });
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 }
 

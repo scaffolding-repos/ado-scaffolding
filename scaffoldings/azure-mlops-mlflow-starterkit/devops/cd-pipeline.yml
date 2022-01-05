@@ -1,0 +1,49 @@
+trigger: none
+
+pr: none
+
+resources:
+  pipelines:
+    - pipeline: ci_artifacts
+      source: mlflow-ci-pipeline
+      trigger:
+        branches:
+          - dev
+          - stg
+          - prod
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+- group: azure-mlops-mlflow-variable-group
+
+stages:
+- stage: train_model
+  displayName: 'Train model'
+  jobs:
+  - deployment: train_model_job
+    displayName: 'Train model'
+    environment: 'DEV'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: |
+              python -m pip install --upgrade pip
+              cd $(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts
+              pip install -r 'requirements.txt' --use-deprecated=legacy-resolver
+            displayName: 'Install Dependencies and set USE_CASE from CI artifact'
+
+          - template: templates/steps/azure-cli-step.yml
+            parameters:
+              stepName: 'train_model_step'
+              stepDisplayName: 'Train model'
+              serviceConnectionName: '$(AML_WORKSPACE_SVC_CONNECTION)'
+              dowloadedSourceDirectory: '$(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts/src'
+              pythonCommandLine: 'python run_training.py'
+
+          - script: |
+              rm -rf $(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts/
+              echo ">>> Working directory has been cleaned properly."
+            displayName: 'Clean working directory for next run'
