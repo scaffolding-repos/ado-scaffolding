@@ -10,16 +10,32 @@ Generally, this extension generates the code includes:
 
 ## How to use
 
-- Install from Azure DevOps Marketplace
+- [Install from Azure DevOps Marketplace](https://marketplace.visualstudio.com/items?itemName=SeanMa.azure-solution-scaffolding)
 
-Note: The extension need permission scopes to generate repo, branches and pipelines. And it is hosed as Github Pages, no server-side to collect user data.
+  Note: The extension need permission scopes to generate repo, branches and pipelines. And it is hosed as Github Pages, no server-side to collect user data.
 
-- GitHub Page
+```text
+    "vso.build_execute",
+    "vso.project_manage",
+    "vso.work_full",
+    "vso.release_manage",
+    "vso.settings",
+    "vso.variablegroups_manage",
+    "vso.code_full",
+    "vso.tokens",
+    "vso.tokenadministration",
+    "vso.security_manage",
+    "vso.machinegroup_manage",
+    "vso.environment_manage",
+    "vso.taskgroups_manage",
+    "vso.serviceendpoint_manage"
+```
 
-https://scaffolding-repos.github.io/ado-scaffolding/
+- [GitHub Page](https://scaffolding-repos.github.io/ado-scaffolding/)
 
-Code download only.
-Note: repo and pipelines will not be generated.
+  Code download only.
+  
+  Note: repo and pipelines will not be generated.
 
 ## How to contribute
 

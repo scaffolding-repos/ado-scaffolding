@@ -1,6 +1,15 @@
 {
   "variables": {
-    
+    "name": {
+      "type": "string",
+      "title": "Project Name",
+      "default": "My Databricks Project"
+    },
+    "description": {
+      "type": "string",
+      "title": "Project Description",
+      "default": "Data process with Azure Databricks"
+    }
   },
   "rules": {
     
