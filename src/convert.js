@@ -55,7 +55,7 @@ async function codeConvert(contents, variable) {
               variable[key] = scaffoldingSettings.variables[key].default;
             });
           }
-          if (path != "scaffolding.json" && valid) {
+          if (path != "scaffolding.json" && path != "scaffolding.md" && valid) {
             let resultText = contents[path];
             try {
               const tempFn = doT.template(resultText);

@@ -45,7 +45,6 @@ jobs:
             DATABRICKS_TOKEN: ${{ parameters.databricksToken}}
             CLUSTER: ${{ parameters.databricksClusterId}}
 
-
         - script: |
             nutter run $NOTEBOOK_PATH $CLUSTER --recursive --junit_report
           displayName: 'Execute Nutter'

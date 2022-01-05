@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "azure-solution-scaffolding",
     "publisher": "SeanMa",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "Azure Solution Scaffolding",
     "description": "ADO Extension for Azure Solution Scaffolding",
     "public": true,
@@ -12,18 +12,11 @@
     "categories": ["Azure Repos"],
     "baseUri": "https://scaffolding-repos.github.io/ado-scaffolding/",
     "scopes": [
-        "vso.build",
         "vso.build_execute",
-        "vso.project",
-        "vso.project_write",
         "vso.project_manage",
-        "vso.work",
-        "vso.work_write",
         "vso.work_full",
         "vso.release_manage",
         "vso.settings",
-        "vso.variablegroups_read",
-        "vso.variablegroups_write",
         "vso.variablegroups_manage",
         "vso.code_full",
         "vso.tokens",
@@ -31,9 +24,8 @@
         "vso.security_manage",
         "vso.machinegroup_manage",
         "vso.environment_manage",
-        "vso.taskgroups_read",
-        "vso.taskgroups_write",
-        "vso.taskgroups_manage"
+        "vso.taskgroups_manage",
+        "vso.serviceendpoint_manage"
     ],
     "targets": [
         {
