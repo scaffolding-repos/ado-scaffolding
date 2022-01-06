@@ -42,6 +42,27 @@ export default {
               console.log(error);
             }
           }
+
+          if (this.createServiceConnections) {
+            try {
+              Object.keys(this.scaffoldingSettings.serviceconnections).forEach(
+                (serviceconnectionName) => {
+                  if (this.scaffoldingSettings.serviceconnections[serviceconnectionName].type == "AzureMLWorkspace") {
+                    this.adoClient.createAMLServiceConnection(
+                      this.variables.subscriptionId,
+                      this.variables.resourceGroup,
+                      this.variables.tenantId,
+                      this.variables.mlWorkspaceName,
+                      this.variables.mlWorkspaceLocation,
+                      serviceconnectionName
+                    );
+                  }
+                }
+              );
+            } catch (error) {
+              console.log(error);
+            }
+          }          
         },
         async previewCode() {
           this.convertedCode = await convert(this.scaffoldingObj, this.variables);
