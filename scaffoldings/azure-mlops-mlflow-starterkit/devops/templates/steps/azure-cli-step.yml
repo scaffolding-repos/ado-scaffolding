@@ -10,6 +10,10 @@ parameters:
     type: string
   - name: pythonCommandLine
     type: string
+  - name: experimentName
+    type: string
+  - name: experimentRunId
+    type: string
 
 steps:
 - task: AzureCLI@1
@@ -27,3 +31,6 @@ steps:
       ${{ parameters.pythonCommandLine }}
   name: ${{ parameters.stepName }}
   displayName: ${{ parameters.stepDisplayName }}
+  env:
+    EXPERIMENT_NAME: ${{ parameters.experimentName }}
+    EXPERIMENT_RUN_ID: ${{ parameters.experimentRunId }}

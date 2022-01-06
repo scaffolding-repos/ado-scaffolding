@@ -54,7 +54,7 @@
               style="padding-bottom: 10px"
             >
               <b-checkbox v-model="createServiceConnections">
-                <span style="padding-left: 10px">Create Service Connection</span>
+                <span style="padding-left: 10px">Create Azure ML Service Connection</span>
               </b-checkbox>
             </b-field>
 

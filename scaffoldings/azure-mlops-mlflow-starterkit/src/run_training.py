@@ -5,7 +5,6 @@ from pathlib import Path
 from utils.mlops_utils import get_aml_workspace
 
 # Load the JSON settings file and relevant section
-print(">>> Loading settings")
 with open(Path("resources", "settings.json").as_posix()) as f:
     settings = json.load(f)
 azureml_settings = settings["azureml"]
@@ -26,14 +25,12 @@ mlflow.set_tracking_uri(ws.get_mlflow_tracking_uri())
 # os.environ["MLFLOW_TRACKING_URI"] = ws.get_mlflow_tracking_uri()
 
 # Attach Experiment
-print(">>> Loading Experiment")
 exp = Experiment(workspace=ws,
                  name=experiment_settings["name"])
 mlflow.set_experiment(exp.name)
 
 
 # Submit Project
-print(">>> Running mlflow project on AML")
 remote_mlflow_run = mlflow.projects.run(uri=".",
                                         parameters={"epochs": 200},
                                         backend="azureml",
@@ -41,11 +38,8 @@ remote_mlflow_run = mlflow.projects.run(uri=".",
                                                         "USE_CONDA": True},
                                         synchronous=True)
 
-# Save run details
-run_details = {}
-run_details["run_id"] = remote_mlflow_run.run_id
-run_details["experiment_name"] = exp.name
 
-print(f">>> Experiment run id: {remote_mlflow_run.run_id}")
-with open(Path("resources", "run_details.json").as_posix(), "w") as outfile:
-    json.dump(run_details, outfile)
+# Set output variable to Azure DevOps pipeline
+# With experiment_name and run_id, subsequent DevOps pipeline stages could find the target experiment run
+print(f"##vso[task.setvariable variable=experimentName;isOutput=true]{exp.name}")
+print(f"##vso[task.setvariable variable=experimentRunId;isOutput=true]{remote_mlflow_run.run_id}")

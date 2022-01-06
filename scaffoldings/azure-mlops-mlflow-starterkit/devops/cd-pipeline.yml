@@ -42,8 +42,74 @@ stages:
               serviceConnectionName: '$(AML_WORKSPACE_SVC_CONNECTION)'
               dowloadedSourceDirectory: '$(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts/src'
               pythonCommandLine: 'python run_training.py'
+              experimentName: ''
+              experimentRunId: ''
 
+
+- stage: register_model
+  displayName: 'Register model'
+  dependsOn: train_model
+  condition: succeeded('train_model')
+  variables:
+    - name: experimentName
+      value: $[ stageDependencies.train_model.train_model_job.outputs['train_model_job.train_model_step.experimentName'] ]
+    - name: experimentRunId
+      value: $[ stageDependencies.train_model.train_model_job.outputs['train_model_job.train_model_step.experimentRunId'] ]
+  jobs:
+  - deployment: register_model_job
+    displayName: 'Register model'
+    environment: 'DEV'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
           - script: |
-              rm -rf $(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts/
-              echo ">>> Working directory has been cleaned properly."
-            displayName: 'Clean working directory for next run'
+              python -m pip install --upgrade pip
+              cd $(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts
+              pip install -r 'requirements.txt' --use-deprecated=legacy-resolver
+            displayName: 'Install Dependencies and set USE_CASE from CI artifact'
+
+          - template: templates/steps/azure-cli-step.yml
+            parameters:
+              stepName: 'register_model_step'
+              stepDisplayName: 'Register model'
+              serviceConnectionName: '$(AML_WORKSPACE_SVC_CONNECTION)'
+              dowloadedSourceDirectory: '$(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts/src'
+              pythonCommandLine: 'python register_model.py'
+              experimentName: $(experimentName)
+              experimentRunId: $(experimentRunId)
+
+- stage: deploy_model
+  displayName: 'Deploy model as scoring web service'
+  dependsOn: 
+  - train_model
+  - register_model
+  condition: succeeded('register_model')
+  variables:
+    - name: experimentName
+      value: $[ stageDependencies.train_model.train_model_job.outputs['train_model_job.train_model_step.experimentName'] ]
+    - name: experimentRunId
+      value: $[ stageDependencies.train_model.train_model_job.outputs['train_model_job.train_model_step.experimentRunId'] ]
+  jobs:
+  - deployment: deploy_model_job
+    displayName: 'Deploy model'
+    environment: 'DEV'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: |
+              python -m pip install --upgrade pip
+              cd $(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts
+              pip install -r 'requirements.txt' --use-deprecated=legacy-resolver
+            displayName: 'Install Dependencies and set USE_CASE from CI artifact'
+
+          - template: templates/steps/azure-cli-step.yml
+            parameters:
+              stepName: 'deploy_model_step'
+              stepDisplayName: 'Deploy model'
+              serviceConnectionName: '$(AML_WORKSPACE_SVC_CONNECTION)'
+              dowloadedSourceDirectory: '$(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts/src'
+              pythonCommandLine: 'python deploy_model.py'
+              experimentName: $(experimentName)
+              experimentRunId: $(experimentRunId)
