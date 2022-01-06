@@ -50,18 +50,27 @@
             </b-field>
 
             <b-field
-              v-if="scaffoldingSettings.variablegroups"
+              v-if="scaffoldingSettings.serviceconnections"
               style="padding-bottom: 10px"
             >
-              <b-checkbox :value="createVariableGroups">
-                <span style="padding-left: 10px">Create Variable Group</span>
+              <b-checkbox v-model="createServiceConnections">
+                <span style="padding-left: 10px">Create Service Connection</span>
               </b-checkbox>
             </b-field>
+
             <b-field
               v-if="scaffoldingSettings.variablegroups"
               style="padding-bottom: 10px"
             >
-              <b-checkbox :value="createPipelines">
+              <b-checkbox v-model="createVariableGroups">
+                <span style="padding-left: 10px">Create Variable Group</span>
+              </b-checkbox>
+            </b-field>
+            <b-field
+              v-if="scaffoldingSettings.pipelines"
+              style="padding-bottom: 10px"
+            >
+              <b-checkbox v-model="createPipelines">
                 <span style="padding-left: 10px">Create DevOps Pipeline</span>
               </b-checkbox>
             </b-field>
@@ -179,6 +188,7 @@ export default {
       adoClient: null,
       createVariableGroups: true,
       createPipelines: true,
+      createServiceConnections: true
     };
   },
   methods: {

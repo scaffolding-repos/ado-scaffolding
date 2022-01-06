@@ -1,0 +1,49 @@
+{
+  "azureml": {
+    "subscription_id": "{%{=params.subscriptionId}%}",
+    "resource_group": "{%{=params.resourceGroup}%}",
+    "workspace_name": "{%{=params.mlWorkspaceName}%}"
+  },
+  "experiment": {
+    "name": "mlops-mlflow-iris-classification"
+  },
+  "run_tags": {
+    "submitted": "Azure pipeline"
+  },
+  "compute_target": {
+    "training": {
+      "amlcompute": {
+        "name": "gpu-cluster-v100"
+      }
+    }
+  },
+  "deployment": {
+    "model": {
+      "name": "iris-classifier",
+      "path": "model",
+      "evaluation_parameters": {
+        "larger_is_better": [],
+        "smaller_is_better": []
+      },
+      "tags": {
+        "framework": "Pytorch"
+      },
+      "properties": {
+        "Creator": "azureml-mlflow"
+      }
+    },
+    "dev_deployment": {
+      "name": "iris-classifier-aci-dev",
+      "cpu_cores": 2,
+      "memory_gb": 2,
+      "auth_enabled": false,
+      "ssl_enabled": false,
+      "ssl_cert_pem_file": null,
+      "ssl_key_pem_file": null,
+      "ssl_cname": null,
+      "enable_app_insights": true,
+      "location": null,
+      "dns_name_label": null
+    }
+  }
+}
