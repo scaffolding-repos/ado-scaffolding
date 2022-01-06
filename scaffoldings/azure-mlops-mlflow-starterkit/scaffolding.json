@@ -1,0 +1,67 @@
+{
+  "variables": {
+    "subscriptionId": {
+      "type": "string",
+      "title": "Subscription ID",
+      "default": ""
+    },
+    "resourceGroup": {
+      "type": "string",
+      "title": "Resource Group",
+      "default": ""
+    },    
+    "tenantId": {
+      "type": "string",
+      "title": "Tenant ID",
+      "default": ""
+    },
+    "mlWorkspaceName": {
+      "type": "string",
+      "title": "Azure ML workspace name",
+      "default": ""
+    },
+    "mlWorkspaceLocation": {
+      "type": "string",
+      "title": "Azure ML workspace location",
+      "default": ""
+    }
+  },
+  "rules": {
+    
+  },
+  "branches":{
+    "dev":{
+      "description": "Dev Branch"
+    },
+    "stg":{
+      "description": "Staging Branch"
+    },
+    "release":{
+      "description": "Release Branch"
+    }
+  },
+  "variablegroups": {
+    "azure-mlops-mlflow-variable-group": {
+      "AML_WORKSPACE_SVC_CONNECTION": {
+        "isSecured": false,
+        "value": "azure-ml-workspace-service-connection"
+      }
+    }
+  },
+  "pipelines": {
+    "mlflow-ci-pipeline":{
+      "folder":"mlflow-pipelines",
+      "path":"devops/ci-pipeline.yml"
+    },
+    "mlflow-cd-pipeline":{
+      "folder":"mlflow-pipelines",
+      "path":"devops/cd-pipeline.yml"
+    }
+  },
+  "serviceconnections": {
+    "azure-ml-workspace-service-connection":{
+      "type":"AzureMLWorkspace"
+    }
+  }
+}
+

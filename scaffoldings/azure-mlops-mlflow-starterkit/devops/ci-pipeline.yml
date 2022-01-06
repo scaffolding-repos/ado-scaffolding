@@ -1,0 +1,46 @@
+trigger:
+  branches:
+    include:
+    - dev
+    - stg
+    - prod
+
+  paths:
+    include:
+    - src
+    - tests
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+
+stages:
+- stage: lint_checks_stage
+  displayName: 'Lint checks'
+  jobs:
+  - job: lint_checks_job
+    displayName: 'Lint checks'
+    
+    steps:
+    - script: |
+        python -m pip install --upgrade pip
+        python -m pip install flake8
+        python -m flake8 --ignore E501
+      displayName: 'Lint checks'
+
+
+- stage: publish_artifacts_stage
+  displayName: 'Publish Artifacts'
+  dependsOn: lint_checks_stage
+  condition: succeeded('lint_checks_stage')
+
+  jobs:
+  - job: publish_artifacts_job
+    displayName: 'Publish Artifacts'
+
+    steps:
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Pipeline.Workspace)/s'
+        artifact: 'mlops_python_scripts'
+        publishLocation: 'pipeline'

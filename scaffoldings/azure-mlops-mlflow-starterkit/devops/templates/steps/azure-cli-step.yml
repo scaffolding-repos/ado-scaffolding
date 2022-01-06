@@ -1,0 +1,36 @@
+---
+parameters:
+  - name: stepName
+    type: string
+  - name: stepDisplayName
+    type: string
+  - name: serviceConnectionName
+    type: string
+  - name: dowloadedSourceDirectory
+    type: string
+  - name: pythonCommandLine
+    type: string
+  - name: experimentName
+    type: string
+  - name: experimentRunId
+    type: string
+
+steps:
+- task: AzureCLI@1
+  inputs:
+    azureSubscription: ${{ parameters.serviceConnectionName }}
+    scriptLocation: inlineScript
+    workingDirectory: $(Build.SourcesDirectory)
+    addSpnToEnvironment: true
+    inlineScript: |
+      set -e
+      
+      # Run Python script
+      cd ${{ parameters.dowloadedSourceDirectory }}
+      export PYTHONPATH=${{ parameters.dowloadedSourceDirectory }}
+      ${{ parameters.pythonCommandLine }}
+  name: ${{ parameters.stepName }}
+  displayName: ${{ parameters.stepDisplayName }}
+  env:
+    EXPERIMENT_NAME: ${{ parameters.experimentName }}
+    EXPERIMENT_RUN_ID: ${{ parameters.experimentRunId }}
