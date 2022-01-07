@@ -1,6 +1,6 @@
 # Overview
 
-This extension generates **code repository** of solutions based on Azure Services, such as Azure DataBricks, Azure ML and so on. It can be used as starter kit to simplify the project generation.
+This extension generates **code repository** of solutions based on Azure Services, such as Azure Databricks, Azure ML and so on. It can be used as starter kit to simplify the project generation.
 
 It generate the following artifacts for a solution
 

@@ -8,7 +8,7 @@ variables:
 - group: Databricks-prod-environment
 
 stages:
-{%{ if(params.test) { }%}
+{%{ if(params.nuttertest) { }%}
 - stage: deploy_to_staging
   displayName: 'Deploy to staging'
   jobs:

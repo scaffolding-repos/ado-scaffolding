@@ -1,6 +1,7 @@
 
 
 var gitzip = require("../gitzip");
+var importzip = require("../importzip");
 var convert = require("../convert");
 var JSZip = require("jszip");
 var FileSaver = require("file-saver");
@@ -94,8 +95,14 @@ export default {
           this.loadScaffodling();
         },
         async loadScaffodling() {
-          const scaffolding = this.scaffoldings[this.scaffoldingsIdx];
-          this.scaffoldingObj = await gitzip(scaffolding);
+          
+          if(this.scaffoldingsIdx==-1) {
+            this.scaffoldingObj = await importzip();
+          } else {
+            const scaffolding = this.scaffoldings[this.scaffoldingsIdx];
+            this.scaffoldingObj = await gitzip(scaffolding);
+          }
+
           const scaffoldingJSON = this.scaffoldingObj["scaffolding.json"];
           const scaffoldingSettings = JSON.parse(scaffoldingJSON);
           this.schema = {
@@ -121,6 +128,7 @@ export default {
           this.adoClient.getVariableGroups(this.adoProject.id);
         },
         async createRepo() {
+          this.notificationMsg = "Start Creating";
           const repo = await this.adoClient.createRepo(
             this.repoName,
             this.adoProject.id,
@@ -129,12 +137,43 @@ export default {
           );
           const that = this;
           this.showNotification = true;
-          this.notificationMsg = "Create Repo Successfully";
+          this.notificationMsg = "Create Successfully";
           setTimeout(() => {
             that.showNotification = false;
           }, 5000);
     
           return repo
         },
+        async openFile() {
+          const that = this
+          const readFile = async function(e) {
+            var file = e.target.files[0];
+            if (!file) {
+              return;
+            }
+            const contents = {};
+            const jszip = new JSZip();
+            await jszip.loadAsync(  e.target.files[0] /* = file blob */)
+               .then(async function(zip) {
+                const paths = Object.keys(zip.files);
+                for (let i = 0; i < paths.length; i++) {
+                  const file = zip.file(paths[i]);
+                  if (file && !file.dir) {
+                    const path = paths[i]///.substring(`${scaffolding}/`.length);
+                    contents[path] = await file.async("string");
+                  }
+                }
+                that.scaffoldingObj = contents
+               }, function() {alert("Not a valid zip file")}); 
+          }
+          const id = 'loadzip_'+(new Date()).getTime()
+          const fileInput = document.createElement("input")
+          fileInput.type='file'
+          fileInput.style.display='none'
+          fileInput.onchange=readFile
+          fileInput.id=id
+          document.body.appendChild(fileInput)
+          document.getElementById(id).click();
+        }
       },
   };
