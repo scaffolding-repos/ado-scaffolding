@@ -9,10 +9,22 @@
       "type": "string",
       "title": "Project Description",
       "default": "Data process with Azure Databricks"
+    },
+    "nuttertest": {
+      "type": "boolean",
+      "title": "Add Nutter Test",
+      "default": false
     }
+
   },
   "rules": {
-    
+    "test/main_notebook_test.py": "nuttertest",
+    "devops/template/deploy_notebook_job.yml": "_pipelines",
+    "devops/template/test_notebook_job.yml": ["_pipelines", "nuttertest"],
+    "devops/pr-pipeline.yml": "_pipelines",
+    "devops/cd-pipeline.yml": "_pipelines",
+    "devops/pd-pipeline.yml": "_pipelines"
+
   },
   "branches":{
     "dev":{
