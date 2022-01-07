@@ -19,6 +19,7 @@ stages:
       databricksToken: '$(databricksToken_test)'
       databricksNotebookPath: '/Shared/notebook-tests/dbxbuild_$(Build.BuildId)/'
 
+{%{ if(params.test) { }%}
 
 - stage: test_at_testing
   displayName: 'Test at testing environment'
@@ -31,3 +32,4 @@ stages:
       databricksClusterId: '$(databricksClusterId_test)'
       databricksNotebookPath: '/Shared/notebook-tests/dbxbuild_$(Build.BuildId)/'
 
+{%{ } }%}

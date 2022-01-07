@@ -9,7 +9,7 @@ var FileSaver = require("file-saver");
 export default {
     methods: {
         async handleSubmit() {
-          this.convertedCode = await convert(this.scaffoldingObj, this.variables);
+          this.convertedCode = await convert(this.scaffoldingObj, this.variables, this.createPipelines);
           const repo = await this.createRepo();
           if (this.createVariableGroups) {
             try {
@@ -65,7 +65,8 @@ export default {
           }          
         },
         async previewCode() {
-          this.convertedCode = await convert(this.scaffoldingObj, this.variables);
+
+          this.convertedCode = await convert(this.scaffoldingObj, this.variables, this.createPipelines);
         },
         async downloadCode() {
           const that = this;
@@ -102,7 +103,7 @@ export default {
             properties: scaffoldingSettings.variables,
           };
           this.scaffoldingSettings = scaffoldingSettings;
-          this.convertedCode = await convert(this.scaffoldingObj, this.variables);
+          this.convertedCode = await convert(this.scaffoldingObj, this.variables, this.createPipelines);
           this.$forceUpdate();
         },
         async getProjects() {

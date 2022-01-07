@@ -70,7 +70,7 @@
               v-if="scaffoldingSettings.pipelines"
               style="padding-bottom: 10px"
             >
-              <b-checkbox v-model="createPipelines">
+              <b-checkbox v-model="createPipelines" @input="previewCode()">
                 <span style="padding-left: 10px">Create DevOps Pipeline</span>
               </b-checkbox>
             </b-field>
