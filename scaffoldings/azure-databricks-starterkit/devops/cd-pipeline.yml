@@ -18,7 +18,7 @@ stages:
       databricksToken: '$(databricksToken_stg)'
       databricksNotebookPath: '/Shared/notebook-tests/dbxbuild_$(Build.BuildId)/'
 
-{%{ if(params.test) { }%}
+{%{ if(params.nuttertest) { }%}
 
 - stage: test_at_stg
   displayName: 'Test at staging'

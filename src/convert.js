@@ -24,8 +24,6 @@ async function codeConvert(contents, variable, createPipelines) {
     (async () => {
       try {
 
-        // eslint-disable-next-line no-debugger
-        debugger
 
         const newContents = {};
 
