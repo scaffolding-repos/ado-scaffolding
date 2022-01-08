@@ -10,7 +10,7 @@ It generates the following artifacts for a solution:
 - **Generate Azure DevOps Pipelines** with yaml files.
 - **Generate Azure DevOps Variable Groups** with environment variables used in pipelines.
 
-Note: The extension need the permission scopes as below for code generation. And it is hosed as Github Pages, so **no user data can be collected**.
+Note: The extension needs the permission scopes as below. And it is hosed as Github Pages (a static website), so **no user data can be collected**.
 
 ```text
     "vso.build_execute",
@@ -33,11 +33,17 @@ After installing this extension, you can find **Scaffolding** under **Repos**
 
 ![**Scaffolding** under **Repos**](https://github.com/scaffolding-repos/ado-scaffolding/raw/dev/screenshots/scaffolding.png)
 
-**To download the generated code only, please use the GitHub Page**
+Click **Scaffolding** to go to the extension UI.
+
+![**Scaffolding** under **Repos**](https://github.com/scaffolding-repos/ado-scaffolding/raw/dev/screenshots/extension_ui.png)
+
+**If download the generated code only, please use the GitHub Page, no Azure DevOps extension install needed.**
 
 https://scaffolding-repos.github.io/ado-scaffolding
 
-## Scaffolding List
+## Build-in Scaffolding List
+
+The scaffolding templates provided by this extension.
 
 1. [azure-databricks-starterkit](https://github.com/scaffolding-repos/ado-scaffolding/blob/release/scaffoldings/azure-databricks-starterkit/scaffolding.md)
 
@@ -55,92 +61,100 @@ https://scaffolding-repos.github.io/ado-scaffolding
 
 You can import your own scaffolding as a zip file
 
-### How to create a scaffolding as zip file
+![import a zip](https://github.com/scaffolding-repos/ado-scaffolding/raw/dev/screenshots/import_zip.png)
 
-1. Put all sample code under the folder named as your scaffolding name
-2. Create a **scaffolding.json** file, and define the following fields:
-   - variables
+### Create your scaffolding as zip file
 
-     The variables will be rendered in the extension as input fields, and the value of the variable input by user will be used in template engine to generate code.
+1. Put all sample code under the folder named as your scaffolding name.
+2. Create a **scaffolding.json** file.
+3. zip the folder and import.
 
-        ```json
-        "variables": {
-            "name": {
-                "type": "string",
-                "title": "Project Name",
-                "default": "sampleApp"
-            },
-            ...
+### The content of scaffolding.json
+
+In the **scaffolding.json**, you need define the following fields:
+
+- variables
+
+    The variables will be rendered in the extension as input fields, and the value of the variable input by user will be used in template engine to generate code.
+
+    ```json
+    "variables": {
+        "name": {
+            "type": "string",
+            "title": "Project Name",
+            "default": "sampleApp"
+        },
+        ...
+    }
+    ```
+
+    **Build-in variable:**
+
+    **_pipeline** is a boolean type build-in variable to identify if "Create Pipelines" is checked by user.
+
+- rules
+
+    It is a key-value collection, the key is the file name, and the value is the name of variables which type is boolean. The value can be an array, when multiple boolean variables applied. see the example below.
+
+    ```json
+    "rules": {
+        "test/test.sh": "test",
+        "devops/pipeline.yml": "_pipelines",
+        "devops/ci_pipeline.yml": ["_pipelines", "test"]
+    }
+    ```
+
+    The file will be created in the scaffolding when the value is true, vice versa.
+
+- branches
+
+    ```json
+    "branches":{
+        "dev":{
+            "description": "Dev Branch"
+        },
+        "stg":{
+            "description": "Staging Branch"
+        },
+        "release":{
+            "description": "Release Branch"
         }
-        ```
+    }
+    ```
 
-     **Build-in variable:**
+    Define the code branches to be created in the repo by the extension. The first one is the default branch.
 
-     **_pipeline** is a boolean type build-in variable to identify if "Create Pipelines" is checked by user.
+- pipelines
 
-   - rules
-
-     It is a key-value collection, the key is the file name, and the value is the name of variables which type is boolean. The value can be an array, when multiple boolean variables applied. see the example below.
-
-        ```json
-        "rules": {
-            "test/test.sh": "test",
-            "devops/pipeline.yml": "_pipelines",
-            "devops/ci_pipeline.yml": ["_pipelines", "test"]
+    ```json
+    "pipelines": {
+        "ci_pipeline":{
+            "folder":"pipelines",
+            "path":"devops/ci_pipeline.yml"
+        },
+        "cd_pipeline":{
+            "folder":"pipelines",
+            "path":"devops/cd_pipeline.yml"
         }
-        ```
+    }
+    ```
 
-     The file will be created in the scaffolding when the value is true, vice versa.
+    Define the pipelines to be created by the extension.
 
-   - branches
+- variable groups
 
-        ```json
-        "branches":{
-            "dev":{
-                "description": "Dev Branch"
-            },
-            "stg":{
-                "description": "Staging Branch"
-            },
-            "release":{
-                "description": "Release Branch"
+    ```json
+    "variablegroups": {
+        "sample-vg": { //variable group name
+            "sample_var": { //variable name
+                "isSecured": false,
+                "value": "val"
             }
         }
-        ```
+    }
+    ```
 
-     Define the code branches to be created in the repo by the extension. The first one is the default branch.
-
-   - pipelines
-
-        ```json
-        "pipelines": {
-            "ci_pipeline":{
-                "folder":"pipelines",
-                "path":"devops/ci_pipeline.yml"
-            },
-            "cd_pipeline":{
-                "folder":"pipelines",
-                "path":"devops/cd_pipeline.yml"
-            }
-        }
-        ```
-
-     Define the pipelines to be created by the extension.
-
-   - variable groups
-
-        ```json
-        "variablegroups": {
-            "sample-vg": { //variable group name
-                "sample_var": { //variable name
-                    "isSecured": false,
-                    "value": "val"
-                }
-            }
-        }
-        ```
-  
-     Variable groups will be created by the extension.
+    Variable groups will be created by the extension.
 
 ### An entire example of scaffolding.json
 
@@ -207,7 +221,7 @@ You can import your own scaffolding as a zip file
 }
 ```
 
-### Render variables as form in the extension view
+### Render variables as form in the extension view automatically
 
 The variables in the above scaffolding.json will be rendered as a form in extension UI.
 ![scaffolding settings](https://github.com/scaffolding-repos/ado-scaffolding/raw/dev/screenshots/settings.png "scaffolding settings")
@@ -253,7 +267,7 @@ This extension uses [doT.js](https://olado.github.io/doT/) as template engine to
 
     The code will be generated only if the variable **_pipelines** is **true**
 
-    _Here **_pipelines** is the build-in variable to identify if user need create pipelines by select the checkbox in extension UI._
+    _Here **_pipelines** is the build-in variable to identify if user need create pipelines by selecting the checkbox in extension UI._
 
 - Advanced Usage
 
