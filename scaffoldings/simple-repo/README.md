@@ -13,6 +13,8 @@ the shell script is located [src/echo.sh](src/echo.sh)
 
   It creates three branches: **dev, stg, release**.
 
+{%{ if(params._pipelines)  }%}
+
 - Pipeline:
 
   It creates a pipeline named **pr_pipeline** under folder **pipelines**, with the yaml file located at [./devops/pipeline.yml](./devops/pipeline.yml), it will trigger when a PR occurred in **dev branch**. .
@@ -21,7 +23,11 @@ the shell script is located [src/echo.sh](src/echo.sh)
 
   It creates a Variable Group named **sample-vg** with one variable named **sample_var**.
 
-By clicking the "Create" button, the extension will generate the above components in the selected project and then the pipeline can be run to invoke the shell script.
+{%{ } }%}
+
+By clicking the "Create" button, the extension will generate the above components in the selected project.
+
+{%{ if(params._pipelines)  }%}
 
 ## References
 
@@ -30,3 +36,9 @@ https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started/what-is-azur
 
 - Variable Groups:
 https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=yaml
+
+{%{ } }%}
+
+## License
+
+License: {%{=params.license }%}

@@ -1,0 +1,1 @@
+sh ./src/echo.sh TEST
