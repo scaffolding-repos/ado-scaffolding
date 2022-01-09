@@ -40,8 +40,9 @@ stages:
               stepName: 'train_model_step'
               stepDisplayName: 'Train model'
               serviceConnectionName: '$(AML_WORKSPACE_SVC_CONNECTION)'
-              dowloadedSourceDirectory: '$(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts/src'
-              pythonCommandLine: 'python run_training.py'
+              dowloadedSourceDirectory: '$(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts'
+              pythonCommandLine: 'python src/run_training.py'
+              trainingPlatform: 'azureml'
               experimentName: ''
               experimentRunId: ''
 
@@ -74,8 +75,9 @@ stages:
               stepName: 'register_model_step'
               stepDisplayName: 'Register model'
               serviceConnectionName: '$(AML_WORKSPACE_SVC_CONNECTION)'
-              dowloadedSourceDirectory: '$(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts/src'
-              pythonCommandLine: 'python register_model.py'
+              dowloadedSourceDirectory: '$(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts'
+              pythonCommandLine: 'python src/register_model.py'
+              trainingPlatform: 'azureml'
               experimentName: $(experimentName)
               experimentRunId: $(experimentRunId)
 
@@ -109,7 +111,8 @@ stages:
               stepName: 'deploy_model_step'
               stepDisplayName: 'Deploy model'
               serviceConnectionName: '$(AML_WORKSPACE_SVC_CONNECTION)'
-              dowloadedSourceDirectory: '$(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts/src'
-              pythonCommandLine: 'python deploy_model.py'
+              dowloadedSourceDirectory: '$(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts'
+              pythonCommandLine: 'python src/deploy_model.py'
+              trainingPlatform: 'azureml'
               experimentName: $(experimentName)
               experimentRunId: $(experimentRunId)

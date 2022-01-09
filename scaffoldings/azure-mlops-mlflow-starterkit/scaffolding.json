@@ -24,6 +24,11 @@
       "type": "string",
       "title": "Azure ML workspace location",
       "default": ""
+    },
+    "mlComputeTarget": {
+      "type": "string",
+      "title": "Azure ML compute target",
+      "default": ""
     }
   },
   "rules": {

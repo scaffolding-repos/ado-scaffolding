@@ -1,4 +1,6 @@
 pandas
+pytest
+azure-cli
 azureml-sdk==1.36.0
 azureml-widgets==1.36.0
 azureml-mlflow==1.36.0

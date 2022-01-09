@@ -29,10 +29,42 @@ stages:
       displayName: 'Lint checks'
 
 
-- stage: publish_artifacts_stage
-  displayName: 'Publish Artifacts'
+- stage: model_training_test_stage
+  displayName: 'Model Training Test'
   dependsOn: lint_checks_stage
   condition: succeeded('lint_checks_stage')
+  jobs:
+  - job: model_training_test_job
+    displayName: 'Model Training Test'
+    steps:
+    - script: |
+        python -m pip install --upgrade pip
+        pip install -r 'requirements.txt' --use-deprecated=legacy-resolver
+        pip install torch==1.6.0 torchvision==0.7.0 pandas==1.3.2 scikit-learn==0.24.2
+      displayName: 'Install dependencies'
+      workingDirectory: "$(System.DefaultWorkingDirectory)/"
+
+    - script: |
+        # Trigger a slim mlflow model training with 'local' backend, then check whether model file has been generated or not
+        python -m pytest tests/test_model_training.py --junitxml=test_mlops.xml --disable-pytest-warnings
+      workingDirectory: '$(System.DefaultWorkingDirectory)/'
+      displayName: "Model Training Test"
+      env:
+        TRAINING_PLATFORM: 'local'
+
+    - task: PublishTestResults@2
+      displayName: Publish UT results
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/test*.xml'
+        failTaskOnFailedTests: true
+        testRunTitle: 'Publish UT results'
+
+
+- stage: publish_artifacts_stage
+  displayName: 'Publish Artifacts'
+  dependsOn: model_training_test_stage
+  condition: succeeded('model_training_test_stage')
 
   jobs:
   - job: publish_artifacts_job

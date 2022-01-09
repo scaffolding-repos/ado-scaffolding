@@ -14,6 +14,8 @@ parameters:
     type: string
   - name: experimentRunId
     type: string
+  - name: trainingPlatform
+    type: string
 
 steps:
 - task: AzureCLI@1
@@ -32,5 +34,6 @@ steps:
   name: ${{ parameters.stepName }}
   displayName: ${{ parameters.stepDisplayName }}
   env:
+    TRAINING_PLATFORM: ${{ parameters.trainingPlatform }}
     EXPERIMENT_NAME: ${{ parameters.experimentName }}
     EXPERIMENT_RUN_ID: ${{ parameters.experimentRunId }}
