@@ -2,7 +2,7 @@
   <div class="columns" style="height: 100%; overflow: hidden">
     <div class="column is-half">
       <div style="padding: 10px; border: 0">
-        <p class="card-header-title">Scaffolding Settings</p>
+        <p class="card-header-title">Scaffolding - [ {{ scaffoldingSettings.name }} ]</p>
 
         <form class="box">
           <b-field label="Select Scaffolding" labelPosition="on-border">
@@ -19,6 +19,9 @@
                 :key="scaffolding"
               >
                 {{ scaffolding }}
+              </option>
+              <option value="-1">
+                &lt;&lt;Import a scaffolding via zip file...&gt;&gt;
               </option>
             </b-select>
           </b-field>
@@ -70,14 +73,14 @@
               v-if="scaffoldingSettings.pipelines"
               style="padding-bottom: 10px"
             >
-              <b-checkbox v-model="createPipelines">
+              <b-checkbox v-model="createPipelines" @input="previewCode()">
                 <span style="padding-left: 10px">Create DevOps Pipeline</span>
               </b-checkbox>
             </b-field>
           </template>
           <schema-form
             :schema="schema"
-            :ado="adoProjects"
+            :ado="adoProjects || {}"
             v-model="variables"
             @submit="handleSubmit()"
             @submit2="previewCode()"

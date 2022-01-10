@@ -1,6 +1,6 @@
 # Overview
 
-This is a simple MLOps scaffolding template using azureml-mlflow and Pytorch to train and register an Iris classifier model in _Azure Machine Learning_ studio, and finally deploy it to _Azure Container Instances_ as scoring web service.
+This is a MLOps scaffolding template using azureml-mlflow and Pytorch to train and register an Iris classifier model in _Azure Machine Learning_ studio, and deploy it to _Azure Container Instances_ as scoring web service.
 
 The following list is the scope of this scaffolding:
 

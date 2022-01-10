@@ -8,7 +8,7 @@ variables:
 - group: Databricks-prod-environment
 
 stages:
-
+{%{ if(params.nuttertest) { }%}
 - stage: deploy_to_staging
   displayName: 'Deploy to staging'
   jobs:
@@ -31,13 +31,16 @@ stages:
       databricksClusterId: '$(databricksClusterId_stg)'
       databricksNotebookPath: '/Shared/notebook-tests/dbxbuild_$(Build.BuildId)/'
 
+{%{ } }%}
 
 - stage: deploy_to_prod
   displayName: 'Deploy to production'
   condition: |
     and(
-      startsWith(variables['Build.SourceBranch'], 'refs/heads/{%{=params.release_branch}%}'),
-      succeeded('test_at_stg')
+      startsWith(variables['Build.SourceBranch'], 'refs/heads/{%{=params.release_branch}%}')
+{%{ if(params.test) { }%}      
+      ,succeeded('test_at_stg')
+{%{ } }%}
     )
   jobs:
   - template: ./template/deploy_notebook_job.yml

@@ -15,16 +15,18 @@
   - **dev branch** is the code base of development
   - **stg branch** is for integration testing
   - **release branch** is for production deployment
-  
+
+{%{ if(params._pipelines) { }%}  
+
 - Pipeline:
 
   The project has 3 devops pipelines
 
-  - **pr-pipeline** triggered when code merged into **dev branch**, it will run testing.
+  - **pr-pipeline** triggered when code merged into **dev branch**.
 
-  - **cd-pipeline** triggered when code merged into **stg branch**, it will run testing.
+  - **cd-pipeline** triggered when code merged into **stg branch**.
 
-  - **pd-pipeline** triggered when code merged into **release branch**, it will run testing and deploy notebooks to the production Databricks workspace and cluster.
+  - **pd-pipeline** triggered when code merged into **release branch**, it deploys notebooks to the production Databricks workspace and cluster.
 
 - Variable Group:
 
@@ -39,6 +41,8 @@
   - **databricksToken_[dev|stg|prod]**: the access token of Databricks.
 
 Before running the pipeline, please fill the value of variables.
+
+{%{ } }%}
 
 ## References
 

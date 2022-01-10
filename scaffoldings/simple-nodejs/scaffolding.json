@@ -1,4 +1,5 @@
 {
+  "name":"simple-nodejs",
   "variables": {
     "name": {
       "type": "string",

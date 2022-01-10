@@ -18,10 +18,13 @@ doT.templateSettings = {
 };
 
 
-async function codeConvert(contents, variable) {
+async function codeConvert(contents, variable, createPipelines) {
+            
   return new Promise(function (resolve, reject) {
     (async () => {
       try {
+
+
         const newContents = {};
 
 
@@ -32,17 +35,19 @@ async function codeConvert(contents, variable) {
           if (
             scaffoldingSettings.rules &&
             scaffoldingSettings.rules[path] &&
-            typeof scaffoldingSettings.rules[path] === "function"
+            Array.isArray(scaffoldingSettings.rules[path])
           ) {
-            valid = scaffoldingSettings.rules[path](
-              scaffoldingSettings.variables
-            );
+            scaffoldingSettings.rules[path].forEach(item=>{
+              valid = valid && variable[item]
+            })
           } else if (
             scaffoldingSettings.rules &&
             scaffoldingSettings.rules[path] &&
             Object.keys(scaffoldingSettings.rules).indexOf(path) != -1
           ) {
-            if (variable) {
+            if(scaffoldingSettings.rules[path] == "_pipelines") {
+              valid = createPipelines
+            } else if (variable) {
               valid = variable[scaffoldingSettings.rules[path]]
             } else {
               valid = false
@@ -55,6 +60,8 @@ async function codeConvert(contents, variable) {
               variable[key] = scaffoldingSettings.variables[key].default;
             });
           }
+
+          variable._pipelines = createPipelines
           if (path != "scaffolding.json" && path != "scaffolding.md" && valid) {
             let resultText = contents[path];
             try {
@@ -65,8 +72,9 @@ async function codeConvert(contents, variable) {
             }
             newContents[path] = resultText;
           }
-          resolve(newContents);
+          
         });
+        resolve(newContents);
       } catch (e) {
         reject(e);
       }

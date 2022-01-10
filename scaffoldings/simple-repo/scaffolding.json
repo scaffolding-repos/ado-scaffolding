@@ -1,4 +1,5 @@
 {
+  "name":"simple-repo",
   "variables": {
     "name": {
       "type": "string",
@@ -10,14 +11,22 @@
       "title": "Project Description",
       "default": "sample app"
     },
-    "gitignore": {
+    "test": {
       "type": "boolean",
-      "title": "Need .gitignore",
+      "title": "Need Test",
       "default": true
+    },
+    "license": {
+      "type": "string",
+      "title": "License",
+      "enum": ["Apache-2.0", "ISC"],
+      "default": "ISC"
     }
   },
   "rules": {
-    ".gitignore": "gitignore"
+    "test/test.sh": "test",
+    "devops/pipeline.yml": "_pipelines",
+    "devops/ci_pipeline.yml": ["_pipelines", "test"]
   },
   "branches":{
     "dev":{
@@ -39,9 +48,13 @@
     }
   },
   "pipelines": {
-    "pr_pipeline":{
+    "ci_pipeline":{
       "folder":"pipelines",
-      "path":"devops/pipeline.yml"
+      "path":"devops/ci_pipeline.yml"
+    },
+    "cd_pipeline":{
+      "folder":"pipelines",
+      "path":"devops/cd_pipeline.yml"
     }
   }
 }

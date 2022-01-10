@@ -1,0 +1,18 @@
+trigger:
+  branches:
+    include:
+    - dev
+   
+variables:
+- group: sample-vg
+
+steps:
+- task: Bash@3
+  inputs:
+    filePath: 'src/echo.sh'
+    arguments: 'TEST'
+
+- task: Bash@3
+  inputs:
+    filePath: 'tests/test.sh'
+    arguments: 'TEST'
