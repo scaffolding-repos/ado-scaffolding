@@ -59,20 +59,3 @@ stages:
         testResultsFiles: '**/test*.xml'
         failTaskOnFailedTests: true
         testRunTitle: 'Publish UT results'
-
-
-- stage: publish_artifacts_stage
-  displayName: 'Publish Artifacts'
-  dependsOn: model_training_test_stage
-  condition: succeeded('model_training_test_stage')
-
-  jobs:
-  - job: publish_artifacts_job
-    displayName: 'Publish Artifacts'
-
-    steps:
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: '$(Pipeline.Workspace)/s'
-        artifact: 'mlops_python_scripts'
-        publishLocation: 'pipeline'

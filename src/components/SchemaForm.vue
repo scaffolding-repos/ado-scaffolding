@@ -13,7 +13,7 @@
     </slot>
     <template v-for="(property, key) in schema.properties">
       <slot :name="key" :item="{key: key, schema: property, value: items[key], update: updateValue}">
-        <component :is="element" :key="key" :schema="property" :value="items[key]" @input="updateValue($event, key)" style="padding-bottom:20px"></component>
+        <component :is="element" :key="key" :schema="property" :value="items[key]" @input="updateValue($event, key)" style="padding-bottom:10px"></component>
       </slot>
     </template>
     <slot name="actions">

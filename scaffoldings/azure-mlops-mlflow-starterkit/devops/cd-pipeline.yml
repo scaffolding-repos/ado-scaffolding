@@ -40,12 +40,13 @@ stages:
               stepName: 'train_model_step'
               stepDisplayName: 'Train model'
               serviceConnectionName: '$(AML_WORKSPACE_SVC_CONNECTION)'
-              dowloadedSourceDirectory: '$(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts/src'
-              pythonCommandLine: 'python run_training.py'
+              dowloadedSourceDirectory: '$(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts'
+              pythonCommandLine: 'python src/run_training.py'
+              trainingPlatform: 'azureml'
               experimentName: ''
               experimentRunId: ''
 
-
+{%{ if(params.registerModel) { }%}
 - stage: register_model
   displayName: 'Register model'
   dependsOn: train_model
@@ -74,17 +75,28 @@ stages:
               stepName: 'register_model_step'
               stepDisplayName: 'Register model'
               serviceConnectionName: '$(AML_WORKSPACE_SVC_CONNECTION)'
-              dowloadedSourceDirectory: '$(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts/src'
-              pythonCommandLine: 'python register_model.py'
+              dowloadedSourceDirectory: '$(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts'
+              pythonCommandLine: 'python src/register_model.py'
+              trainingPlatform: 'azureml'
               experimentName: $(experimentName)
               experimentRunId: $(experimentRunId)
+{%{ } }%}
 
+{%{ if(params.deployModel) { }%}
+  {%{ if(params.registerModel) { }%}
 - stage: deploy_model
   displayName: 'Deploy model as scoring web service'
   dependsOn: 
   - train_model
   - register_model
   condition: succeeded('register_model')
+  {%{ } else { }%}
+- stage: deploy_model
+  displayName: 'Deploy model as scoring web service'
+  dependsOn: 
+  - train_model
+  condition: succeeded('train_model')
+  {%{ } }%}
   variables:
     - name: experimentName
       value: $[ stageDependencies.train_model.train_model_job.outputs['train_model_job.train_model_step.experimentName'] ]
@@ -109,7 +121,9 @@ stages:
               stepName: 'deploy_model_step'
               stepDisplayName: 'Deploy model'
               serviceConnectionName: '$(AML_WORKSPACE_SVC_CONNECTION)'
-              dowloadedSourceDirectory: '$(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts/src'
-              pythonCommandLine: 'python deploy_model.py'
+              dowloadedSourceDirectory: '$(Pipeline.Workspace)/ci_artifacts/mlops_python_scripts'
+              pythonCommandLine: 'python src/deploy_model.py'
+              trainingPlatform: 'azureml'
               experimentName: $(experimentName)
               experimentRunId: $(experimentRunId)
+{%{ } }%}
