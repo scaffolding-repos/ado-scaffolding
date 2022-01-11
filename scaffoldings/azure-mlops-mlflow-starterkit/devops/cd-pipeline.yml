@@ -46,7 +46,7 @@ stages:
               experimentName: ''
               experimentRunId: ''
 
-
+{%{ if(params.registerModel) { }%}
 - stage: register_model
   displayName: 'Register model'
   dependsOn: train_model
@@ -80,13 +80,23 @@ stages:
               trainingPlatform: 'azureml'
               experimentName: $(experimentName)
               experimentRunId: $(experimentRunId)
+{%{ } }%}
 
+{%{ if(params.deployModel) { }%}
+  {%{ if(params.registerModel) { }%}
 - stage: deploy_model
   displayName: 'Deploy model as scoring web service'
   dependsOn: 
   - train_model
   - register_model
   condition: succeeded('register_model')
+  {%{ } else { }%}
+- stage: deploy_model
+  displayName: 'Deploy model as scoring web service'
+  dependsOn: 
+  - train_model
+  condition: succeeded('train_model')
+  {%{ } }%}
   variables:
     - name: experimentName
       value: $[ stageDependencies.train_model.train_model_job.outputs['train_model_job.train_model_step.experimentName'] ]
@@ -116,3 +126,4 @@ stages:
               trainingPlatform: 'azureml'
               experimentName: $(experimentName)
               experimentRunId: $(experimentRunId)
+{%{ } }%}

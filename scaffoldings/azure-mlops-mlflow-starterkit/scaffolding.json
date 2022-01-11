@@ -30,10 +30,22 @@
       "type": "string",
       "title": "Azure ML compute target",
       "default": ""
+    },
+    "registerModel": {
+      "type": "boolean",
+      "title": "Add model registering stage to CD pipeline",
+      "default": false
+    },
+    "deployModel": {
+      "type": "boolean",
+      "title": "Add model deloying as scoring web service stage to CD pipeline",
+      "default": false
     }
   },
   "rules": {
-    
+    "devops/cd-pipeline.yml": "_pipelines",
+    "devops/ci-pipeline.yml": "_pipelines",
+    "devops/pr-pipeline.yml": "_pipelines"
   },
   "branches":{
     "dev":{
@@ -62,6 +74,10 @@
     "mlflow-cd-pipeline":{
       "folder":"mlflow-pipelines",
       "path":"devops/cd-pipeline.yml"
+    },
+    "mlflow-pr-pipeline":{
+      "folder":"mlflow-pipelines",
+      "path":"devops/pr-pipeline.yml"
     }
   },
   "serviceconnections": {
